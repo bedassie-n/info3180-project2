@@ -14,16 +14,19 @@ from app.models import Users, Favourites, Cars
 # Routing for your application.
 ###
 
-@app.route('/')
-def home():
-    """Render website's home page."""
-    return render_template('home.html')
-
-
-@app.route('/about/')
-def about():
-    """Render the website's about page."""
-    return render_template('about.html', name="Mary Jane")
+# Please create all new routes and view functions above this route.
+# This route is now our catch all route for our VueJS single page
+# application.
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def index(path):
+    """
+    Because we use HTML5 history mode in vue-router we need to configure our
+    web server to redirect all routes to index.html. Hence the additional route
+    "/<path:path".
+    Also we will render the initial webpage and then let VueJS take control.
+    """
+    return render_template('index.html')
 
 
 @app.route('/uploads/<filename>')
@@ -34,18 +37,26 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
+# Here we define a function to collect form errors from Flask-WTF
+# which we can later use
+def form_errors(form):
+    error_messages = []
+    """Collects form errors"""
+    for field, errors in form.errors.items():
+        for error in errors:
+            message = u"Error in the %s field - %s" % (
+                    getattr(form, field).label.text,
+                    error
+                )
+            error_messages.append(message)
+
+    return error_messages
+
+
 ###
 # The functions below should be applicable to all Flask apps.
 ###
 
-# Display Flask WTF errors as Flash messages
-def flash_errors(form):
-    for field, errors in form.errors.items():
-        for error in errors:
-            flash(u"Error in the %s field - %s" % (
-                getattr(form, field).label.text,
-                error
-            ), 'danger')
 
 @app.route('/<file_name>.txt')
 def send_text_file(file_name):
@@ -73,4 +84,4 @@ def page_not_found(error):
 
 
 if __name__ == '__main__':
-    app.run(debug=True,host="0.0.0.0",port="8080")
+    app.run(debug=True, host="0.0.0.0", port="8080")
