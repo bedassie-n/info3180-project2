@@ -1,258 +1,35 @@
 :root{
-    --main-bg-colour: #24b5ab;
+    --main-bg-colour: #fff;
 }
 
 body {
     padding-top: 50px;
-    background-color: rgb(231, 231, 231);
-}
-
-main > div{
-    margin-top: 3%;
-    margin-bottom: 5%;
+    background-color: var(--main-bg-colour);
 }
 
 nav{
-    background-color: var(--main-bg-colour)!important;
-    box-shadow: 0px -2px 6px -1px rgba(0,0,0,0.42) inset;
-    -webkit-box-shadow: 0px -2px 6px -1px rgba(0,0,0,0.42) inset;
-    -moz-box-shadow: 0px -2px 6px -1px rgba(0,0,0,0.42) inset;
+    font-size: medium;
 }
 
-nav div{
-    margin-left: 3em;
-}
-
-nav div ul li{
-    margin-right: 1em;
+.nav-link{
     font-weight: 200;
-    transition: all .5s ease-in;
 }
 
-.navlink:hover{
-    border-bottom: solid azure;
-    border-bottom: thick;
+.navbar-brand{
+    margin: 0;
+    padding: 1px;
 }
 
-nav span svg{
-    margin-top: 1px;
-    fill: white;
+.navbar-brand p{
+    display: inline;
+    font-size: medium;
+    padding: 8px;
+    margin: 0;
 }
 
-h1{
-    font-weight: bolder;
-}
-
-.property-info.rooms p{
-    align-self: center;
-    align-content: center;
-}
-
-.prop-grid{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: 1fr;
-}
-
-.prop{
-    grid-area: auto;
-    background-color: azure;
-    border-radius: 10px;
-    box-shadow: 1px 1px 6px -1px rgba(0,0,0,0.42);
-    -webkit-box-shadow: 1px 1px 6px -1px rgba(0,0,0,0.42);
-    -moz-box-shadow: 1px 1px 6px -1px rgba(0,0,0,0.42);
-    margin: 3%;
-}
-
-.prop img{
-    height: 15em;
-    width: 100%;
-    object-fit: cover;
-    overflow: hidden;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-.prop-info{
-    padding: 3%;
-}
-
-.prop-info article{
-    fill: rgb(165, 165, 165);
-    color: rgb(165, 165, 165);
-    font-weight: 200;
-    margin-bottom: 1em;
-}
-
-.prop-info span{
-    font-size: small;
-    color: white;
-    font-weight: 400;
-    background-color: rgb(68, 168, 255);
-    padding: 1%;
-    border-radius: 10px;
-    margin-top: 10em;
-}
-
-.prop button{
-    border: 0;
-    height: 50px;
-    width: 100%;
-    color: white;
-    font-weight: bolder;
-    background-color: var(--main-bg-colour);
-    border-radius: 2px;
-    transition: all .2s ease-in-out;
-    -webkit-transition: all .2s ease-in-out;
-    -moz-transition: all .2s ease-in-out;
-    -o-transition: all .2s ease-in-out;
-}
-
-.prop button:hover{
-    cursor: pointer;
-    color: var(--main-bg-colour);
-    background-color: azure;
-    
-}
-
-.housing{
-    display: flex;
-    justify-content: center;
-}
-
-.property{
-    display: grid;
-    grid-template: 1fr / 1fr 1fr;
-    border-radius: 10px;
-    box-shadow: 1px 1px 6px -1px rgba(0,0,0,0.42);
-    -webkit-box-shadow: 1px 1px 6px -1px rgba(0,0,0,0.42);
-    -moz-box-shadow: 1px 1px 6px -1px rgba(0,0,0,0.42);
-    margin-top: 10%;
-    margin-bottom: 10%;
-    height:75%;
-    width: 75%;
-    padding: 0;
-    background-color: rgb(236, 253, 253);
-    align-items: center;
-}
-
-.property button{
-    border: 0;
-    height: 30px;
-    width: auto;
-    color: white;
-    background-color: var(--main-bg-colour);
-    border-radius: 2px;
-    border-width: 1px;
-    border-color: var(--main-bg-colour);
-    border-style: solid;
-    transition: all .5s ease-in-out;
-    -webkit-transition: all .5s ease-in-out;
-    -moz-transition: all .5s ease-in-out;
-    -o-transition: all .5s ease-in-out;
-}
-
-.property button:hover{
-    cursor: pointer;
-    color: var(--main-bg-colour);
-    background-color: white;
-    
-}
-
-.property div img{
-    border-bottom-left-radius: 10px;
-    border-top-left-radius: 10px;
-    max-height: max-content;
-    width: 100%;
-    object-fit: cover;
-    overflow: hidden;
-}
-
-.property_img{
-    grid-area: 1 / 1 / 2 / 2;
-    max-height: max-content;
-}
-
-.property-info{
-    padding: 1em;
-    grid-area: 1 / 2 / 2 / 3;
-}
-
-.tags{
-    display: flex;
-    flex-flow: row;
-}
-
-.tags p{
-    margin-right: 2rem;
-    border-radius: 10px;
-
-}
-
-.tags p:nth-child(1){
-    font-size: small;
-    color: white;
-    font-weight: bold;
-    background-color: rgb(68, 168, 255);
-    padding: 1%;
-}
-
-.tags p:nth-child(2){
-    font-size: small;
-    color: white;
-    font-weight: bold;
-    background-color: rgb(214, 203, 54);
-    padding: 1%;
-}
-
-.prop-form{
-    background-color: azure;
-    width: 75%;
-    padding: 2em;
-}
-
-.form-input{
-    border: 0;
-    border-radius: 2px;
-    box-shadow: 0.5px 0.5px 1px 1px rgba(121, 121, 121, 0.42);
-    -webkit-box-shadow: 0.5px 0.5px 1px 1px rgba(119, 117, 117, 0.42);
-    -moz-box-shadow: 0.5px 0.5px 1px 1px rgba(121, 121, 121, 0.42);
-    
-}
-
-.form-label{
-    display: block;
-    font-weight: 600;
-}
-
-#file-wrapper{
-    position: relative;
-    
-}
-
-#file-wrapper p{
-    position: absolute;
-	top: 0px;
-	left: 0px;
-	z-index: 1;
-    background-color: azure;
-    padding: .5em;
-    color: rgb(161, 161, 161);
-    border-radius: 2px;
-    box-shadow: 0.5px 0.5px 1px 1px rgba(121, 121, 121, 0.42);
-    -webkit-box-shadow: 0.5px 0.5px 1px 1px rgba(119, 117, 117, 0.42);
-    -moz-box-shadow: 0.5px 0.5px 1px 1px rgba(121, 121, 121, 0.42);
-}
-
-input[type="file"]{
-    position: relative;
-	text-align: right;
-	-moz-opacity:0 ;
-	opacity: 0;
-    z-index: 2;
-    padding: .5em;
-}
-
-.form-row .col{
-    margin: .5em;
+#car_logo{
+    width: 20px;
+    height: 20px;
+    fill:white;
+    vertical-align: text-bottom;
 }
