@@ -1,17 +1,20 @@
 // Forked from info-3180-lab7
 
+
+
 const app = Vue.createApp({
   data() {
       return {
 
       }
-  }
+  },
+
 });
 
 app.component('app-header', {
   name: 'AppHeader',
   template: `
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <nav v-if="!isPublic" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <a class="navbar-brand" href="#">
       <svg version="1.1" id="car_logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
       width="20px" height="20px" viewBox="0 0 39.055 39.054" style="enable-background:new 0 0 39.055 39.054;"
@@ -87,7 +90,18 @@ app.component('app-header', {
       </ul> 
     </div>
   </nav>
-  `
+  `,
+    data(){
+      return {
+          publicRoutes:['Login']
+      }
+    },
+    computed: {
+      isPublic() {
+          //Todo change this to an array for multiple public routes (if needed)
+          return this.$route.name  == "Login"
+      }
+    }
 });
 
 app.component('app-footer', {
@@ -169,6 +183,29 @@ const UploadForm = {
   }
 
 }
+
+const loginComponent = {
+     name: 'login',
+    template: `<div class="login-form">
+    <form action="/examples/actions/confirmation.php" method="post">
+        <h2 class="text-center">Log in</h2>       
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="Username" required="required">
+        </div>
+        <div class="form-group">
+            <input type="password" class="form-control" placeholder="Password" required="required">
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-block">Log in</button>
+        </div>
+        <div class="clearfix">
+            <label class="float-left form-check-label"><input type="checkbox"> Remember me</label>
+            <a href="#" class="float-right">Forgot Password?</a>
+        </div>        
+    </form>
+    <p class="text-center"><a href="#">Create an Account</a></p>
+</div>`
+}
   
 
 
@@ -190,6 +227,7 @@ const routes = [
   { path: "/", component: Home },
   // Put other routes here
   {path:"/uploads",component: UploadForm},
+  {path:"/login",component: loginComponent, name:"Login"},
 
   // This is a catch all route in case none of the above matches
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
