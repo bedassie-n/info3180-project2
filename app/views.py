@@ -8,8 +8,7 @@ import os
 from app import app, db
 from flask import render_template, request, redirect, url_for, flash, send_from_directory
 from werkzeug.utils import secure_filename
-from app.forms import PropertyForm
-from app.models import Property
+from app.models import Users, Favourites, Cars
 
 ###
 # Routing for your application.
@@ -26,47 +25,6 @@ def about():
     """Render the website's about page."""
     return render_template('about.html', name="Mary Jane")
 
-
-@app.route('/property', methods=["GET", "POST"])
-def prop():
-    form = PropertyForm()
-    if request.method == "POST" and form.validate_on_submit():
-        title = form.title.data
-        description = form.description.data
-        rooms = form.rooms.data
-        bathrooms = form.bathrooms.data
-        price = form.price.data
-        ptype = form.ptype.data
-        location = form.location.data
-        photo = request.files['photo']
-        if photo and allowed_file(photo.filename):
-            filename = secure_filename(photo.filename)
-            prop = Property(title, description, rooms, bathrooms, price, ptype, location, filename)
-            db.session.add(prop)
-            db.session.commit()
-            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash('Property added successfully', 'success')
-            return redirect('/properties')
-        else:
-            flash("Photo must be either png or jpg.")
-    else:
-        flash_errors(form)
-    return render_template("add_property.html", form=form)
-
-@app.route('/properties')
-def properties():
-    properties = db.session.query(Property).all()
-    return render_template("properties.html", properties=properties)
-
-
-@app.route('/property/<int:propertyid>')
-def get_prop(propertyid):
-    if type(propertyid) == int:
-        prop = Property.query.get(propertyid)
-        return render_template("property.html", property=prop)
-    else:
-        flash("Error getting property", "danger")
-        return redirect("/properties")
 
 @app.route('/uploads/<filename>')
 def get_image(filename):
