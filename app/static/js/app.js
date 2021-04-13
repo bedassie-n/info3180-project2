@@ -230,7 +230,7 @@ const Register = {
         <h3 class="font-weight-bold display-5">
           Register New User
         </h3>
-        <form class="container" action="/api/register" method="POST" enctype="multipart/form-data">
+        <form class="container" @submit.prevent="register" method="POST" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="col w-25 form-group">
                     <label for="username">Username</label>
@@ -317,6 +317,118 @@ const Register = {
   }
 }
 
+const NewCar = {
+  name: 'NewCar',
+  template:`
+  <section id="new-car-page">
+      <div class="register-form">
+        <h3 class="font-weight-bold display-5">
+          Add New Car
+        </h3>
+        <form class="container" @submit.prevent="addCar" method="POST" enctype="multipart/form-data">
+            <div class="form-row">
+                <div class="col w-25 form-group">
+                    <label for="make">Make</label>
+                    <input class="form-control" id="make" type="text" name="make" placeholder="Tesla">
+                </div>
+                <div class="form-group col w-25">
+                    <label for="model">Model</label>
+                    <input class="form-control" id="model" type="text" name="model" placeholder="Model S">
+                </div> 
+            </div>
+            <div class="form-row">
+                <div class="form-group col w-15">
+                    <label for="colour">Colour</label>
+                    <input class="form-control" id="colour" name="colour" type="text" placeholder="Red">
+                </div>
+                <div class="form-group col w-25">
+                    <label for="year">Year</label>
+                    <input class="form-control" type="number" name="year" id="year" placeholder="2021">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col w-15">
+                    <label for="price">Price</label>
+                    <input class="form-control" id="price" name="price" type="text" placeholder="62700">
+                </div>
+                <div class="form-group col w-25">
+                    <label for="car_type">Car Type</label>
+                    <select id="car_type" class="form-control" name="car_type">
+                      <option selected>Choose...</option>
+                      <option>...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col w-25">
+                    <label for="transmission">Transmission</label>
+                    <select id="transmission" class="form-control" name="transmission">
+                      <option selected>Automatic</option>
+                      <option>Manual</option>
+                      <option>Hybrid</option>
+                    </select>
+                </div>
+                <div class="col w-25"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col w-50">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" type="text" rows=5></textarea>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col w-50">
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input font-weight-bold" name="photo" id="photo">
+                    <label class="custom-file-label" for="photo">Upload Photo</label>
+                  </div>
+                </div>
+                <div class="col w-50"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <button type="submit" class="btn">Save</button>
+                </div>
+            </div>
+        </form>
+      </div>
+  </section>
+  `,
+  created(){
+    document.body.classList.add("background");
+  },
+  methods:{
+     addCar(){
+      let car_form = document.querySelector("#new-car-form .register-form form")
+      let form_data = new FormData(car_form);
+      let self = this;
+      fetch("/api/cars", {
+          method: 'POST',
+          body: form_data,
+          headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
+      })    
+          .then(function (response) {        
+              return response.json();
+              })    
+          .then(function (jsonResponse) {
+              // display a success message
+              console.log(jsonResponse);
+              self.message=jsonResponse.message;
+           })    
+          .catch(function (error) {
+              console.log(error); 
+              self.error=error.message;   
+          });
+     }
+  },
+  data: function(){
+      return {
+          message: "",
+          error: "",
+      }
+  }
+}
+
 const NotFound = {
   name: 'NotFound',
   template: `
@@ -336,6 +448,7 @@ const routes = [
   {path:"/uploads",component: UploadForm},
   {path:"/login",component: loginComponent, name:"Login"},
   {path:"/register", component: Register, name:"Register"},
+  {path:"/cars/new", component: NewCar, name:"NewCar"},
 
   // This is a catch all route in case none of the above matches
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }

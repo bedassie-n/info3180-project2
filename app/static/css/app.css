@@ -97,8 +97,8 @@ nav{
 }
 
 .register-form{
-    padding-left: 20em;
-    padding-right: 20em;
+    padding-left: 22em;
+    padding-right: 22em;
     padding-top: .5em;
     padding-bottom: 1em;
 }
@@ -125,8 +125,9 @@ nav{
 }
 
 label{
-    text-shadow: 0px 0px 2px #cacaca;
+    text-shadow: 0px 0px 1px #cacaca;
 }
+
 
 .register-form .form-row .form-group button{
     font-weight: 300;
@@ -144,4 +145,14 @@ label{
     color: var(--green-button);
     background-color: #fff;
     border-color: var(--green-button);
+}
+
+#new-car-page{
+    padding-top: 1.5em;
+    font-size: 14px;
+}
+
+#new-car-page .register-form{
+    padding-left: 24em;
+    padding-right: 24em;
 }
