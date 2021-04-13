@@ -5,6 +5,7 @@
 body {
     padding-top: 50px;
     background-color: var(--main-bg-colour);
+    overflow: hidden;
 }
 
 nav{
@@ -32,4 +33,34 @@ nav{
     height: 20px;
     fill:white;
     vertical-align: text-bottom;
+}
+
+#home{
+    display: grid;
+    grid-template: 1fr / 1fr 1fr;
+}
+
+#home section > img{
+    overflow: hidden;
+    object-fit: cover;
+    height: 100%;
+}
+
+#home article div{
+    justify-content: center;
+    padding: 10em;
+    text-align: left;
+    align-items: center;
+    vertical-align: center;
+}
+
+#home article div p{
+    color: gray;
+}
+
+#home button{
+    border-radius: 5px;
+    padding-left: 3em;
+    padding-right: 3em;
+    margin-right: 1em;
 }
