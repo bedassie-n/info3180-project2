@@ -243,8 +243,8 @@ const Register = {
             </div>
             <div class="form-row">
                 <div class="form-group col w-15">
-                    <label for="fullname">Fullname</label>
-                    <input class="form-control" id="fullname" name="fullname" type="text">
+                    <label for="name">Fullname</label>
+                    <input class="form-control" id="name" name="name" type="text">
                 </div>
                 <div class="form-group col w-25">
                     <label for="email">Email</label>
@@ -260,8 +260,8 @@ const Register = {
             </div>
             <div class="form-row">
                 <div class="form-group col w-50">
-                    <label for="bio">Biography</label>
-                    <textarea class="form-control" id="bio" name="bio" type="text" rows=5></textarea>
+                    <label for="biography">Biography</label>
+                    <textarea class="form-control" id="biography" name="biography" type="text" rows=5></textarea>
                 </div>
             </div>
             <div class="form-row">
