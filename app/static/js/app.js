@@ -14,7 +14,7 @@ app.component('app-header', {
   name: 'AppHeader',
   template: `
   <nav v-if="!isPublic" class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="/">
       <svg version="1.1" id="car_logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
       width="20px" height="20px" viewBox="0 0 39.055 39.054" style="enable-background:new 0 0 39.055 39.054;"
       xml:space="preserve">
@@ -122,8 +122,8 @@ const Home = {
             <div>
               <h1 class="font-weight-bold display-4">Buy and Sell Cars Online</h1><br>
               <p>United Auto Sales provides the fastest, easiest and most user friendly way to buy or sell cars online. Find a Great Price on the Vehicle You Want</p><br>
-              <button type="button" class="btn btn-primary">Register</button>
-              <button type="button" class="btn btn-success">Login</button>
+              <button id="Register" type="button" class="btn btn-primary">Register</button>
+              <button id="Login" type="button" class="btn btn-success">Login</button>
             </div>
         </article>
         <img src="./static/images/car.jpg" class="img-fluid">
@@ -131,6 +131,14 @@ const Home = {
   `,
   data() {
       return {}
+  },
+  mounted() {
+    document.getElementById("Register").onclick = function(){
+      location.href = "/register";
+    }
+    document.getElementById("Login").onclick = function(){
+      location.href = "/login";
+    }
   }
 };
 
@@ -213,7 +221,101 @@ const loginComponent = {
     <p class="text-center"><a href="#">Create an Account</a></p>
 </div>`
 }
-  
+
+const Register = {
+  name: 'Register',
+  template:`
+  <section id="register-page">
+      <div class="register-form">
+        <h3 class="font-weight-bold display-5">
+          Register New User
+        </h3>
+        <form class="container" action="/api/register" method="POST" enctype="multipart/form-data">
+            <div class="form-row">
+                <div class="col w-25 form-group">
+                    <label for="username">Username</label>
+                    <input class="form-control" id="username" type="text" name="username">
+                </div>
+                <div class="form-group col w-25">
+                    <label for="password">Password</label>
+                    <input class="form-control" id="password" type="password" name="password">
+                </div> 
+            </div>
+            <div class="form-row">
+                <div class="form-group col w-15">
+                    <label for="fullname">Fullname</label>
+                    <input class="form-control" id="fullname" name="fullname" type="text">
+                </div>
+                <div class="form-group col w-25">
+                    <label for="email">Email</label>
+                    <input class="form-control" type="email" name="email" id="email">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col w-25">
+                    <label for="location">Location</label>
+                    <input class="form-control" id="location" name="location" type="text">
+                </div>
+                <div class="col w-25"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col w-50">
+                    <label for="bio">Biography</label>
+                    <textarea class="form-control" id="bio" name="bio" type="text" rows=5></textarea>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col w-50">
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input font-weight-bold" name="photo" id="photo">
+                    <label class="custom-file-label" for="photo">Upload Photo</label>
+                  </div>
+                </div>
+                <div class="col w-50"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <button type="submit" class="btn">Register</button>
+                </div>
+            </div>
+        </form>
+      </div>
+  </section>
+  `,
+  created(){
+    document.body.classList.add("background");
+  },
+  methods:{
+     register(){
+      let register_form = document.querySelector(".register-form form")
+      let form_data = new FormData(register_form);
+      let self = this;
+      fetch("/api/register", {
+          method: 'POST',
+          body: form_data,
+          headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
+      })    
+          .then(function (response) {        
+              return response.json();
+              })    
+          .then(function (jsonResponse) {
+              // display a success message
+              console.log(jsonResponse);
+              self.message=jsonResponse.message;
+           })    
+          .catch(function (error) {
+              console.log(error); 
+              self.error=error.message;   
+          });
+     }
+  },
+  data: function(){
+      return {
+          message: "",
+          error: "",
+      }
+  }
+}
 
 const NotFound = {
   name: 'NotFound',
@@ -233,6 +335,7 @@ const routes = [
   // Put other routes here
   {path:"/uploads",component: UploadForm},
   {path:"/login",component: loginComponent, name:"Login"},
+  {path:"/register", component: Register, name:"Register"},
 
   // This is a catch all route in case none of the above matches
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
