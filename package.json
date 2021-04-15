@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "dependencies": {
+    "vue": "^2.6.12"
+  }
+}
