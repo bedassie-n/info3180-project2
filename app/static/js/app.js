@@ -405,7 +405,8 @@ const NewCar = {
       fetch("/api/cars", {
           method: 'POST',
           body: form_data,
-          headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
+          headers: {'X-CSRFToken': token    },
+          credentials: 'same-origin'
       })    
           .then(function (response) {        
               return response.json();
@@ -425,6 +426,98 @@ const NewCar = {
       return {
           message: "",
           error: "",
+      }
+  }
+}
+
+const ViewCar = {
+  name:'ViewCar',
+  template:`
+  <div class="view_car">
+    <div v-if="isCar" class="car">
+        <div class="car_img">
+            <img class="img-fluid" src="{{car.photo}}">
+        </div>
+        <div class="car-info font-weight-bold">
+            <h1 class="font-weight-bold">{{car.year}} {{car.make}}</h1>
+            <h4 class="text-secondary font-weight-bold">{{car.model}}</h4><br>
+            <section class="text-secondary">
+                <article>{{car.description}}</article>
+            </section><br>
+            <div class="row">
+                <div class="col w-25 text-secondary">Colour</div>
+                <div class="col w-25">{{car.colour}}</div>
+                <div class="col w-25 text-secondary">Body Type</div>
+                <div class="col w-25">{{car.car_type}}</div>
+            </div>
+            <div class="row">
+                <div class="col w-25 text-secondary">Price</div>
+                <div class="col w-25">{{car.price}}</div>
+                <div class="col w-25 text-secondary">Transmission</div>
+                <div class="col w-25">{{car.transmission}}</div>
+            </div>
+             <button type="button">Email Realtor</button>
+        </div>
+    </div>
+    <div v-else class="car">
+        <div class="car_img">
+            <img class="img-fluid" src="../../../uploads/david-gavi-TMz-OUCvFO8-unsplash.jpg">
+        </div>
+        <div class="car-info">
+            <h1 class="font-weight-bold">2018 Tesla</h1>
+            <h4 class="text-secondary font-weight-bold">Model S</h4><br>
+            <section class="text-secondary">
+                <article>
+                  With the longest range and quickest acceleration of any electric vehicle
+                  in production, Model S is the highest performing sedan ever built. Both Long-Range and Plaid powertrains, with updated battery architecture, are capable of back-to-back, consistent 1/4 mile runs.
+                </article>
+            </section><br>
+            <div class="row">
+                <div class="col w-25 text-secondary">Colour</div>
+                <div class="col w-25">Red</div>
+                <div class="col w-25 text-secondary">Body Type</div>
+                <div class="col w-25">Sedan</div>
+            </div>
+            <div class="row">
+                <div class="col w-25 text-secondary">Price</div>
+                <div class="col w-25">$62,888</div>
+                <div class="col w-25 text-secondary">Transmission</div>
+                <div class="col w-25">Automatic</div>
+            </div>
+             <button type="button">Email Realtor</button>
+        </div>
+    </div>
+  </div>
+  `,
+  mounted(){
+    let self = this;
+    fetch(`/api/cars/${this.$route.params.id}`, {
+        method: 'GET',
+        credentials: 'same-origin'
+    })    
+        .then(function (response) {        
+            return response.json();
+            })    
+        .then(function (jsonResponse) {
+            // display a success message
+            console.log(jsonResponse);
+            self.car=jsonResponse;
+            self.isCar = true;
+          })    
+        .catch(function (error) {
+            console.log(error); 
+            self.error=error;  
+            self.isCar = false
+        });
+  },
+  methods:{
+     
+  },
+  data: function(){
+      return {
+          car: {},
+          error: '',
+          isCar: ''
       }
   }
 }
@@ -449,6 +542,7 @@ const routes = [
   {path:"/login",component: loginComponent, name:"Login"},
   {path:"/register", component: Register, name:"Register"},
   {path:"/cars/new", component: NewCar, name:"NewCar"},
+  {path:"/cars/:id", component: ViewCar, name:"ViewCar"},
 
   // This is a catch all route in case none of the above matches
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
