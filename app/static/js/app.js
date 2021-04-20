@@ -85,10 +85,10 @@ const privateAppBar = {
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto ">
         <li class="nav-item active ml-5">
-          <router-link class="nav-link" to="/">Add Car <span class="sr-only">(current)</span></router-link>
+          <router-link class="nav-link" to="/cars/new">Add Car <span class="sr-only">(current)</span></router-link>
         </li>
         <li class="nav-item active ml-5">
-        <router-link class="nav-link" to="/uploads">Explore <span class="sr-only">(current)</span></router-link>
+        <router-link class="nav-link" to="/cars/explore">Explore <span class="sr-only">(current)</span></router-link>
       </li>
       <li class="nav-item active ml-5">
         <router-link class="nav-link" to="/uploads">My Profile <span class="sr-only">(current)</span></router-link>
@@ -676,7 +676,7 @@ const CardCarsList = {
   <path d="M2 1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 1 6.586V2a1 1 0 0 1 1-1zm0 5.586 7 7L13.586 9l-7-7H2v4.586z"/>
 </svg> {{card.price}}</button></span></h5>
                 <p class="card-text">{{card.model}}.</p>
-                <a href="#" class="btn btn-primary btn-block">View more details</a>
+                <a :href="'/cars/' + card.id" class="btn btn-primary btn-block">View more details</a>
               </div>
             </div> 
             </div>
@@ -685,25 +685,28 @@ const CardCarsList = {
       return {
          cars:[
              {
+                 id:1,   
                  year:2020,
                  make:"Lamborghini",
                  model:"Huracan",
                   price:"555,222",
-                 picture:".././images/default-car.jpg"
+                 picture:"../static/images/default-car.jpg"
              }
              ,{
+                 id:2,
                  year:2020,
                  make:"Bugatti",
                  model:"Chiron",
                   price:"555,222",
-                picture:".././images/default-car.jpg"
+                picture:"../static/images/default-car.jpg"
              }
              ,{
+                 id:3,
                  year:2018,
                  make:"Tesla",
                  model:"Model S",
                  price:"555,222",
-                 picture:".././images/default-car.jpg"
+                 picture:"../static/images/default-car.jpg"
              }
              ]
       }
@@ -714,32 +717,29 @@ const ExploreComponent = {
     name:'explore-component',
     template:`
       <section id="explore-page" >
-       <div class="explore-div">
-       <h3 class="font-weight-bold display-5">
-          Explore
-        </h3>
-       <form class="container" @submit.prevent="addCar" method="POST" enctype="multipart/form-data">
-            <div class="form-row  container">
-                <div class="col-sm form-group">
-                    <label for="make">Make</label>
-                    <input class="form-control" id="make" type="text" name="make" placeholder="Tesla">
-                </div>
-                <div class="form-group col-sm">
-                    <label for="model">Model</label>
-                    <input class="form-control" id="model" type="text" name="model" placeholder="Model S">
-                </div> 
-                <div class="form-group col-sm ">
-               
-                    <button type="submit" class="btn-class mt-lg-4">Save</button>
-                </div>
-                   
-                </div> 
-            </div>
-        </form>
-        <CardCarsList></CardCarsList>
-</div>
-
-  </section>
+        <div class="explore-div">
+          <h3 class="font-weight-bold display-5">
+              Explore
+          </h3>
+          <form class="container" @submit.prevent="addCar" method="POST" enctype="multipart/form-data">
+              <div class="form-row  container">
+                  <div class="col-sm form-group">
+                      <label for="make">Make</label>
+                      <input class="form-control" id="make" type="text" name="make" placeholder="Tesla">
+                  </div>
+                  <div class="form-group col-sm">
+                      <label for="model">Model</label>
+                      <input class="form-control" id="model" type="text" name="model" placeholder="Model S">
+                  </div> 
+                  <div class="form-group col-sm ">
+                      <button type="submit" class="btn-class mt-lg-4">Search</button>
+                  </div>
+                  </div>
+              </div>
+          </form>
+          <CardCarsList></CardCarsList>
+        </div>
+      </section>
     `,
     created(){
     document.body.classList.add("grey-background");
