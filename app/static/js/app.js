@@ -487,7 +487,7 @@ const ViewCar = {
             <div class="mt-auto car-opts">
               <button class="" type="button">Email Owner</button>
               <div></div>
-              <span class="heart d-flex flex-row-reverse">
+              <span @click="addFavourite" class="heart d-flex flex-row-reverse">
                 <svg id="heart" viewBox="0 -28 512.001 512" xmlns="http://www.w3.org/2000/svg"><g>
                 <path d="M475.366,71.949c-24.175-23.606-57.575-35.404-100.215-35.404c-11.8,0-23.843,2.046-36.117,6.136
                   c-12.279,4.093-23.702,9.615-34.256,16.562c-10.568,6.945-19.65,13.467-27.269,19.556c-7.61,6.091-14.845,12.564-21.696,19.414
@@ -505,36 +505,7 @@ const ViewCar = {
                   c11.416-4.854,22.08-7.279,31.977-7.279s19.219,0.761,27.977,2.281c8.757,1.521,17.702,4.473,26.84,8.85
                   c9.137,4.38,16.892,10.042,23.267,16.988c6.376,6.947,11.612,16.324,15.705,28.124c4.086,11.798,6.132,25.409,6.132,40.824
                   C475.078,202.133,457.19,236.016,421.405,271.795z"/>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
-              </g>
-              <g>
+              </g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g>
               </g></svg>
               </span>
             </div>
@@ -548,23 +519,50 @@ const ViewCar = {
         method: 'GET',
         credentials: 'same-origin'
     })    
-        .then(function (response) {        
-            return response.json();
-            })    
-        .then(function (jsonResponse) {
-            // display a success message
-            console.log(jsonResponse);
-            self.car=jsonResponse;
-            self.isCar = true;
-          })    
-        .catch(function (error) {
-            console.log(error); 
-            self.error=error;  
-            self.isCar = false
-        });
+    .then(function (response) {        
+        return response.json();
+        })    
+    .then(function (jsonResponse) {
+        // display a success message
+        console.log(jsonResponse);
+        self.car=jsonResponse;
+        self.isCar = true;
+      })    
+    .catch(function (error) {
+        console.log(error); 
+        self.error=error;  
+        self.isCar = false
+    });
   },
   methods:{
-     
+    // Get user_id from JWT bearer payload
+      addFavourite(){
+        fetch(`api/cars/${self.car.id}/favourite`,{
+          method: 'POST',
+          body: JSON.stringify({user_id:0, car_id:self.car.id}), // for testing
+          headers: {'X-CSRFToken': token    },
+          credentials: 'same-origin'
+        })
+        .then(function (response) {
+          if(response.ok){     
+            return response.json();
+          } else if(response.status == 401){
+            throw Error(response.json().message)
+          }
+        })    
+        .then(function (jsonResponse) {
+            // display a success message
+            document.getElementById("heart").classList.add("favourited-svg");
+            document.querySelector(".heart.d-flex.flex-row-reverse").classList.add("favourited");
+
+            console.log(jsonResponse);
+            self.message=jsonResponse.message;
+        })    
+        .catch(function (error) {
+            console.log(error); 
+            self.error=error;   
+        });
+     }
   },
   data: function(){
       return {

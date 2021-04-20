@@ -255,6 +255,17 @@ label{
     fill: white;
 }
 
+.favourited{
+    cursor: pointer;
+    background-color: var(--heart-colour);
+    border-color: var(--heart-colour);
+}
+
+.favourited-svg {
+    cursor: pointer;
+    fill: white;
+}
+
 #heart {
     vertical-align: text-bottom;
     height: 20px;
