@@ -80,11 +80,11 @@ nav{
 .login-form h2 {
     margin: 0 0 15px;
 }
-.form-control, .btn {
+.form-control, .btn ,. btn-class, .price-chip {
     min-height: 38px;
     border-radius: 2px;
 }
-.btn {
+.btn, .btn-class, .price-chip {
     font-size: 15px;
     font-weight: bold;
 }
@@ -97,7 +97,11 @@ nav{
     background-color: rgb(242, 251, 255);
 }
 
-.register-form{
+.grey-background {
+     background-color: #fafafa;
+}
+
+.register-form, .explore-div{
     padding-left: 22em;
     padding-right: 22em;
     padding-top: .5em;
@@ -108,7 +112,7 @@ nav{
     margin-bottom: .8em;
 }
 
-.register-form form{
+.register-form form, .explore-div form{
     background-color: #fff;
     box-shadow: 0px 2px 3px 2px #c0c0c0;
     border-radius: 10px;
@@ -142,6 +146,46 @@ label{
     margin-left: 5px;
 }
 
+.btn-class {
+border: 0;
+    height: 40px;
+    width: 70%;
+    color: white;
+
+    background-color: var(--green-button);
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: var(--green-button);
+    border-style: solid;
+    transition: all .2s ease-in-out;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+}
+
+.price-chip {
+    border: 0;
+    height: 25px;
+    width: auto;
+    color: white;
+     padding-top: 0px;
+    background-color: var(--green-button);
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: var(--green-button);
+    border-style: solid;
+    transition: all .2s ease-in-out;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+}
+
+.btn-class:hover, .price-chip:hover {
+    color: var(--green-button);
+    background-color: #fff;
+    border-color: var(--green-button);
+}
+
 .register-form .form-row .form-group button:hover{
     color: var(--green-button);
     background-color: #fff;
@@ -152,11 +196,32 @@ label{
     padding-top: 1.5em;
     font-size: 14px;
 }
+#explore-page{
+    padding-top: 1.5em;
+    font-size: 14px;
+
+}
 
 #new-car-page .register-form{
     padding-left: 24em;
     padding-right: 24em;
 }
+
+.card-horizontal {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.img-wrapper {
+    width: 300px
+}
+
+.card-details {
+   margin-top: 50px;
+    margin-left: 250px;
+    margin-right: 250px;
+}
+
 
 .view_car{
     display: flex;
@@ -305,4 +370,8 @@ input[type="file"]{
 	opacity: 0;
     z-index: 2;
     padding: .5em;
+}
+
+.vehicle-list-card {
+    margin: 0px 5px 0px 5px;
 }
