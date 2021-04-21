@@ -80,7 +80,7 @@ nav{
 .login-form h2 {
     margin: 0 0 15px;
 }
-.form-control, .btn ,. btn-class, .price-chip {
+.form-control, .btn , .btn-class, .price-chip {
     min-height: 38px;
     border-radius: 2px;
 }

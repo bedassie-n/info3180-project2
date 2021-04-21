@@ -698,7 +698,7 @@ const CardCarsList = {
                  make:"Bugatti",
                  model:"Chiron",
                   price:"555,222",
-                picture:"../static/images/default-car.jpg"
+                picture:"../static/images/car.jpg"
              }
              ,{
                  id:3,
