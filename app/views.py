@@ -91,34 +91,51 @@ def getAllCars():
 @app.route('/api/cars/<car_id>', methods = ['GET'])
 # @requires_auth
 def getcar(car_id):
-    car = Cars.query.filter_by(id = car_id)
-    print(type(car))
-    
-    for c in car:
-        id = c.id
-        description = c.description
-        year = c.year
-        make = c.make
-        model = c.model
-        color = c.colour
-        transmission = c.transmission
-        car_type = c.car_type
-        price = c.price
-        photo = c.photo
-        user_id = c.user_id
-    
-    result = {'id': id, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
+    car = Cars.query.filter_by(id = car_id).all()  # .all() is used on the BaseQuery to return an array for the results, allowing us to evaluate if we got no reult
 
-    # if len(result) == 0:
-    #     # idealy need to figure out how to check the user is authenticated and token valid for a 401
-    #     return jsonify({'error': "Access token is missing or invalid"}), 401
+    if len(car) !=0:
+        for c in car:
+            cid = c.id
+            description = c.description
+            year = c.year
+            make = c.make
+            model = c.model
+            color = c.colour
+            transmission = c.transmission
+            car_type = c.car_type
+            price = c.price
+            photo = c.photo
+            user_id = c.user_id
+   
+        result = {'id': cid, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
+        return jsonify({'result':result}), 200
+    elif len(car) == 0: 
+        return jsonify({"message": car}), 404
+    else:
+        # idealy need to figure out how to check the user is authenticated and token valid for a 401
+        return jsonify({'error': "Access token is missing or invalid"}), 401
+        
+
+#TODO: Add method for removing from favourites
+# @app.route('/api/cars/<car_id>/favourite', methods= ["PUT"])
+# def addCarToFav(car_id):
+    # note the csrf token needed for this from the frontend 
+    # if <check token >:
+    # get current user's id 
+    # user_id = current_user.id
+    # user_id = 1
+    # favs = Favourites(car_id, user_id)
+    # db.sessions.add(favs) #OR 
+    # db.session.(Favourites(car_id=car_id, user_id=user_id)) 
+    # db.session.commit()
+
+    # return jsonify({"message":"Car Successfully Favourited", "car_id":user_id}), 200
     # else:
-    return jsonify({'result':result}), 200
-
+    #    return jsonify({error": "Access token is missing or invalid"}), 401 
 
 @app.route('/api/cars/<car_id>/favourite', methods= ["PUT"])
-def addCarToFav(car_id):
-    # NOTE the csrf token 
+def rmvCarTFav(car_id):
+    # note the csrf token needed for this from the frontend 
     # if <check token >:
     # get current user's id 
     # user_id = current_user.id
@@ -131,6 +148,7 @@ def addCarToFav(car_id):
     return jsonify({"message":"Car Successfully Favourited", "car_id":user_id}), 200
     # else:
     #    return jsonify({error": "Access token is missing or invalid"}), 401 
+
 
 # Please create all new routes and view functions above this route.
 # This route is now our catch all route for our VueJS single page
