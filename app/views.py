@@ -67,26 +67,28 @@ def getAllCars():
     # consider that youll be sending 
     cars = db.session.query(Cars).all()
     result = []
-    for c in cars:
-        id = c.id
-        description = c.description
-        year = c.year
-        make = c.make
-        model = c.model
-        color = c.colour
-        transmission = c.transmission
-        car_type = c.car_type
-        price = c.price
-        photo = c.photo
-        user_id = c.user_id
-        cresult = {'id': id, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
-        result.append(cresult)
-    
-    if len(result) == 0:
+    if len(cars) != 0:
+        for c in cars:
+            id = c.id
+            description = c.description
+            year = c.year
+            make = c.make
+            model = c.model
+            color = c.colour
+            transmission = c.transmission
+            car_type = c.car_type
+            price = c.price
+            photo = c.photo
+            user_id = c.user_id
+            cresult = {'id': id, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
+            result.append(cresult)
+        return jsonify({'result': result}), 200
+    elif len(cars) == 0: 
+        return jsonify({"result": cars}), 404
+    else: 
         # idealy need to figure out how to check the user is authenticated and token valid for a 401
         return jsonify({'error': "Access token is missing or invalid"}), 401
-    else:
-        return jsonify({'result': result}), 200
+
 
 @app.route('/api/cars/<car_id>', methods = ['GET'])
 # @requires_auth
@@ -110,38 +112,40 @@ def getcar(car_id):
         result = {'id': cid, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
         return jsonify({'result':result}), 200
     elif len(car) == 0: 
-        return jsonify({"message": car}), 404
+        return jsonify({"result": car}), 404
     else:
         # idealy need to figure out how to check the user is authenticated and token valid for a 401
         return jsonify({'error': "Access token is missing or invalid"}), 401
         
 
-#TODO: Add method for removing from favourites
-# @app.route('/api/cars/<car_id>/favourite', methods= ["PUT"])
-# def addCarToFav(car_id):
-    # note the csrf token needed for this from the frontend 
-    # if <check token >:
-    # get current user's id 
-    # user_id = current_user.id
-    # user_id = 1
-    # favs = Favourites(car_id, user_id)
-    # db.sessions.add(favs) #OR 
-    # db.session.(Favourites(car_id=car_id, user_id=user_id)) 
-    # db.session.commit()
-
-    # return jsonify({"message":"Car Successfully Favourited", "car_id":user_id}), 200
-    # else:
-    #    return jsonify({error": "Access token is missing or invalid"}), 401 
-
-@app.route('/api/cars/<car_id>/favourite', methods= ["PUT"])
+@app.route('/api/cars/<car_id>/unfavourite', methods= ["PUT"])
 def rmvCarTFav(car_id):
     # note the csrf token needed for this from the frontend 
     # if <check token >:
     # get current user's id 
     # user_id = current_user.id
     user_id = 1
+    favToDel = Favourites.query.filter_by(car_id=car_id).first()
+    db.session.delete(favToDel)
     # favs = Favourites(car_id, user_id)
     # db.sessions.add(favs) #OR 
+    # db.session.add(Favourites(car_id=car_id, user_id=user_id)) 
+    db.session.commit()
+
+    return jsonify({"result":"Car Successfully UnFavourited", "car_id":user_id}), 200
+    # else:
+    #    return jsonify({error": "Access token is missing or invalid"}), 401 
+
+#TODO: Add method for removing from favourites
+@app.route('/api/cars/<car_id>/favourite', methods= ["PUT"])
+def addCarToFav(car_id):
+#     # note the csrf token needed for this from the frontend 
+#     # if <check token >:
+#     # get current user's id 
+#     # user_id = current_user.id
+    user_id = 1
+#     # favs = Favourites(car_id, user_id)
+#     # db.sessions.add(favs) #OR 
     db.session.add(Favourites(car_id=car_id, user_id=user_id)) 
     db.session.commit()
 
