@@ -11,9 +11,9 @@ from werkzeug.utils import secure_filename
 from app.models import Users, Favourites, Cars
 from flask import jsonify
 
-import jwt
-from flask import _request_ctx_stack
-from functools import wraps
+# import jwt
+# from flask import _request_ctx_stack
+# from functools import wraps
 
 
 
