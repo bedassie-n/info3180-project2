@@ -91,7 +91,7 @@ const privateAppBar = {
         <router-link class="nav-link" to="/cars/explore">Explore <span class="sr-only">(current)</span></router-link>
       </li>
       <li class="nav-item active ml-5">
-        <router-link class="nav-link" to="/uploads">My Profile <span class="sr-only">(current)</span></router-link>
+        <router-link class="nav-link" :to="'/user/'+ 1">My Profile <span class="sr-only">(current)</span></router-link>
       </li>
       </ul>
       <ul class="navbar-nav">
@@ -527,7 +527,7 @@ const ViewCar = {
   <div class="view_car">
     <div v-if="isCar" class="car">
         <div class="car_img">
-            <img class="img-fluid" src="{{car.photo}}">
+            <img class="img-fluid" :src="car.photo">
         </div>
         <div class="car-info font-weight-bold">
             <h1 class="font-weight-bold">{{car.year}} {{car.make}}</h1>
@@ -751,6 +751,101 @@ const ExploreComponent = {
 
 }
 
+const UserProfile = {
+  name: 'UserProfile',
+  template:`
+  <div id="user_profile">
+    <section v-if="isUser" class="user ">
+      <div class="user_img">
+          <img class="img-fluid" :src="user.photo">
+      </div>
+      <div class="user-info d-flex flex-column">
+          <h1 class="font-weight-bold">{{user.name}}</h1>
+          <h4 class="text-secondary font-weight-bold">{{user.username}}</h4><br>
+          <section class="text-secondary">
+              <article>
+                {{user.biography}}
+              </article>
+          </section><br>
+          <div class="row">
+              <div class="col w-25 text-secondary">Email</div>
+              <div class="col w-25">{{user.email}}</div>
+          </div>
+          <div class="row">
+              <div class="col w-25 text-secondary">Location</div>
+              <div class="col w-25">{{user.location}}</div>
+          </div>
+          <div class="row">
+              <div class="col w-25 text-secondary">Joined</div>
+              <div class="col w-25">{{user.date_joined}}</div>
+          </div>
+      </div>
+    </section>
+    <section v-if="isUser">
+      <h3> Cars Favourited</h3>
+      <CardCarsList></CarsCardList>
+    </section>
+    <section v-else class="user">
+      <div class="user_img">
+          <img class="img-fluid" src="../../../uploads/david-gavi-TMz-OUCvFO8-unsplash.jpg">
+      </div>
+      <div class="user-info d-flex flex-column">
+          <h1 class="font-weight-bold">Danica Patrick</h1>
+          <h4 class="text-secondary font-weight-bold">@dpatrick</h4><br>
+          <section class="text-secondary">
+              <article>
+                I am a former professional racing driver and the most successful woman in the history of American open-wheel racing. I love cars and driving fast.
+              </article>
+          </section><br>
+          <div class="row">
+              <div class="col w-25 text-secondary">Email</div>
+              <div class="col w-25">dpatrick@example.com</div>
+          </div>
+          <div class="row">
+              <div class="col w-25 text-secondary">Location</div>
+              <div class="col w-25">Wisconsin, USA</div>
+          </div>
+          <div class="row">
+              <div class="col w-25 text-secondary">Joined</div>
+              <div class="col w-25">April 8, 2021</div>
+          </div>
+      </div>
+    </section>
+    <section v-if="!isUser">
+      <h3> Cars Favourited</h3>
+      <CardCarsList></CarsCardList>
+    </section>
+  </div> 
+  `,
+  created(){
+    document.body.classList.add("grey-background");
+  },
+  mounted(){
+    let self = this;
+    fetch(`/api/user/${this.$route.params.user_id}`, {
+        method: 'GET',
+        credentials: 'same-origin'
+    })    
+    .then(function (response) {        
+        return response.json();
+        })    
+    .then(function (jsonResponse) {
+        // display a success message
+        console.log(jsonResponse);
+        self.UserProfile=jsonResponse;
+        self.isUser = true;
+      })    
+    .catch(function (error) {
+        console.log(error); 
+        self.error=error;  
+        self.isUser = false
+    });
+  },
+  components : {
+    CardCarsList
+  }
+}
+
 const NotFound = {
   name: 'NotFound',
   template: `
@@ -773,6 +868,7 @@ const routes = [
   {path:"/cars/new", component: NewCar, name:"NewCar"},
   {path:"/cars/:id", component: ViewCar, name:"ViewCar"},
   {path:"/cars/explore", component: ExploreComponent, name:"Explore"},
+  {path:"/user/:user_id", component: UserProfile, name:"UserProfile"},
 
   // This is a catch all route in case none of the above matches
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
