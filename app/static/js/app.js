@@ -814,7 +814,6 @@ const NotFound = {
 const routes = [
   { path: "/", component: Home },
   // Put other routes here
-  {path:"/uploads",component: UploadForm},
   {path:"/login",component: loginComponent, name:"Login"},
   {path:"/register", component: Register, name:"Register"},
   {path:"/cars/new", component: NewCar, name:"NewCar"},
