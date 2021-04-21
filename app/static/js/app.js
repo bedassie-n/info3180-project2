@@ -233,63 +233,6 @@ const Home = {
   }
 };
 
-const UploadForm = {
-  name: 'Upload-Form',    
-  template: 
-
-  `
-  <div class="alert alert-success" role="alert" v-if="message">
-      {{message}}
-   </div>
-  <div class="alert alert-danger" role="alert" v-if="error">
-   {{error}}
-</div>
-  <form class="form-group" id="uploadForm" @submit.prevent="uploadPhoto" method="post">
-      <div class="formfields">
-          <label for="description">Description</label><br>
-          <textarea class="form-control" id="description" name="description" required=""></textarea><br>
-      </div>
-      <div>
-          <label for="image">Image</label><br>
-          <input class="form-control-file" id="image" name="image" required="" type="file">
-      </div><br>
-      <span></span><br>
-      <button type="submit" name="submit" class="buttons btn btn-success">Submit</button>
-  </form>
-  `,
-  methods:{
-     uploadPhoto(){
-      let uploadForm = document.getElementById('uploadForm');
-      let form_data = new FormData(uploadForm);
-      let self = this;
-      fetch("/api/upload", {
-          method: 'POST',
-          body: form_data,
-          headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
-      })    
-          .then(function (response) {        
-              return response.json();
-              })    
-          .then(function (jsonResponse) {
-              // display a success message
-              console.log(jsonResponse);
-              self.message=jsonResponse.message;
-           })    
-          .catch(function (error) {
-              console.log(error); 
-              self.error=error.message;   
-          });
-     }
-  },
-  data: function(){
-      return {
-          message: "",
-          error: "",
-      }
-  }
-
-}
-
 const loginComponent = {
      name: 'login',
     template: `<div class="login-form">
