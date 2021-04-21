@@ -236,23 +236,21 @@ const Home = {
 const loginComponent = {
      name: 'login',
     template: `<div class="login-form">
+    <h2 class="text-center">Login to your account</h2>       
     <form action="/examples/actions/confirmation.php" method="post">
-        <h2 class="text-center">Log in</h2>       
         <div class="form-group">
-            <input type="text" class="form-control" placeholder="Username" required="required">
+        <label for="username" class="font-weight-bold">Username</label>
+            <input type="text" class="form-control"  required="required" name="username">
         </div>
         <div class="form-group">
-            <input type="password" class="form-control" placeholder="Password" required="required">
+         <label for="password" class="font-weight-bold">Password</label>
+            <input type="password" class="form-control" required="required" name="password">
         </div>
         <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block">Log in</button>
+            <button type="submit" class="btn btn-primary btn-block log-btn-class">Log in</button>
         </div>
-        <div class="clearfix">
-            <label class="float-left form-check-label"><input type="checkbox"> Remember me</label>
-            <a href="#" class="float-right">Forgot Password?</a>
-        </div>        
+          
     </form>
-    <p class="text-center"><a href="#">Create an Account</a></p>
 </div>`
 }
 
