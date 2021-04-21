@@ -668,8 +668,8 @@ const CardCarsList = {
     name: 'card-cars-list',
     template:`<div class="container">
 <div class="row">
-            <div v-for=" card in cars" class="card col-sm vehicle-list-card" style="width: 18rem;">
-              <img class="card-img-top" :src="card.picture" >
+            <div v-for=" card in cars" class="card col-sm vehicle-list-card box-shadow-down" style="width: 18rem;">
+              <img class="img-fluid card-img-top" :src="card.picture" >
               <div class="card-body">
                 <h5 class="card-title">{{card.year + " " + card.make}} <span><button class="price-chip "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tag" viewBox="0 0 16 16">
   <path d="M6 4.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1 0a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z"/>
@@ -754,67 +754,69 @@ const ExploreComponent = {
 const UserProfile = {
   name: 'UserProfile',
   template:`
-  <div id="user_profile">
-    <section v-if="isUser" class="user ">
-      <div class="user_img">
-          <img class="img-fluid" :src="user.photo">
-      </div>
-      <div class="user-info d-flex flex-column">
-          <h1 class="font-weight-bold">{{user.name}}</h1>
-          <h4 class="text-secondary font-weight-bold">{{user.username}}</h4><br>
-          <section class="text-secondary">
-              <article>
-                {{user.biography}}
-              </article>
-          </section><br>
-          <div class="row">
-              <div class="col w-25 text-secondary">Email</div>
-              <div class="col w-25">{{user.email}}</div>
-          </div>
-          <div class="row">
-              <div class="col w-25 text-secondary">Location</div>
-              <div class="col w-25">{{user.location}}</div>
-          </div>
-          <div class="row">
-              <div class="col w-25 text-secondary">Joined</div>
-              <div class="col w-25">{{user.date_joined}}</div>
-          </div>
-      </div>
-    </section>
-    <section v-if="isUser">
-      <h3> Cars Favourited</h3>
-      <CardCarsList></CarsCardList>
-    </section>
-    <section v-else class="user">
-      <div class="user_img">
-          <img class="img-fluid" src="../../../uploads/david-gavi-TMz-OUCvFO8-unsplash.jpg">
-      </div>
-      <div class="user-info d-flex flex-column">
-          <h1 class="font-weight-bold">Danica Patrick</h1>
-          <h4 class="text-secondary font-weight-bold">@dpatrick</h4><br>
-          <section class="text-secondary">
-              <article>
-                I am a former professional racing driver and the most successful woman in the history of American open-wheel racing. I love cars and driving fast.
-              </article>
-          </section><br>
-          <div class="row">
-              <div class="col w-25 text-secondary">Email</div>
-              <div class="col w-25">dpatrick@example.com</div>
-          </div>
-          <div class="row">
-              <div class="col w-25 text-secondary">Location</div>
-              <div class="col w-25">Wisconsin, USA</div>
-          </div>
-          <div class="row">
-              <div class="col w-25 text-secondary">Joined</div>
-              <div class="col w-25">April 8, 2021</div>
-          </div>
-      </div>
-    </section>
-    <section v-if="!isUser">
-      <h3> Cars Favourited</h3>
-      <CardCarsList></CarsCardList>
-    </section>
+  <div id="user_profile" class="row">
+    <div class="w-65 mx-auto mb-5">
+      <section v-if="isUser" class="user mt-5">
+        <div class="user_img">
+            <img class="img-fluid" :src="user.photo">
+        </div>
+        <div class="user-info pr-5">
+            <h1 class="font-weight-bold">{{user.name}}</h1>
+            <h4 class="text-secondary font-weight-bold">{{user.username}}</h4><br>
+            <section class="text-secondary">
+                <article>
+                  {{user.biography}}
+                </article>
+            </section><br>
+            <div class="row">
+                <div class="col w-25 text-secondary">Email</div>
+                <div class="col w-25">{{user.email}}</div>
+            </div>
+            <div class="row">
+                <div class="col w-25 text-secondary">Location</div>
+                <div class="col w-25">{{user.location}}</div>
+            </div>
+            <div class="row">
+                <div class="col w-25 text-secondary">Joined</div>
+                <div class="col w-25">{{user.date_joined}}</div>
+            </div>
+        </div>
+      </section>
+      <section v-if="isUser" id="favourited_cars" class="mt-5">
+        <h3> Cars Favourited</h3>
+        <CardCarsList/>
+      </section>
+      <section v-else class="user mt-5">
+        <div class="user_img">
+            <img class="img-fluid" src="../../../uploads/danicapatrick.jpeg">
+        </div>
+        <div class="user-info pr-15">
+            <h1 class="font-weight-bold">Danica Patrick</h1>
+            <h4 class="text-secondary font-weight-bold">@dpatrick</h4><br>
+            <section class="text-secondary">
+                <article>
+                  I am a former professional racing driver and the most successful woman in the history of American open-wheel racing. I love cars and driving fast.
+                </article>
+            </section><br>
+            <div class="row">
+                <div class="col w-25 text-secondary">Email</div>
+                <div class="col w-25">dpatrick@example.com</div>
+            </div>
+            <div class="row">
+                <div class="col w-25 text-secondary">Location</div>
+                <div class="col w-25">Wisconsin, USA</div>
+            </div>
+            <div class="row">
+                <div class="col w-25 text-secondary">Joined</div>
+                <div class="col w-25">April 8, 2021</div>
+            </div>
+        </div>
+      </section>
+      <section v-if="!isUser" id="favourited_cars" class="mt-5">
+        <h3> Cars Favourited</h3>
+        <CardCarsList/>
+      </section>
+    </div>
   </div> 
   `,
   created(){
@@ -840,6 +842,13 @@ const UserProfile = {
         self.error=error;  
         self.isUser = false
     });
+  },
+  data: function(){
+      return {
+          user: {},
+          error: '',
+          isUser: ''
+      }
   },
   components : {
     CardCarsList
