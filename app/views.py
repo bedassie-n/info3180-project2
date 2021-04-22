@@ -31,32 +31,75 @@ from flask import jsonify
   @wraps(f)
   def decorated(*args, **kwargs):
     auth = request.headers.get('Authorization', None) # or request.cookies.get('token', None)
-
     if not auth:
       return jsonify({'code': 'authorization_header_missing', 'description': 'Authorization header is expected'}), 401
-
     parts = auth.split()
-
     if parts[0].lower() != 'bearer':
       return jsonify({'code': 'invalid_header', 'description': 'Authorization header must start with Bearer'}), 401
     elif len(parts) == 1:
       return jsonify({'code': 'invalid_header', 'description': 'Token not found'}), 401
     elif len(parts) > 2:
       return jsonify({'code': 'invalid_header', 'description': 'Authorization header must be Bearer + \s + token'}), 401
-
     token = parts[1]
     try:
         payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-
     except jwt.ExpiredSignatureError:
         return jsonify({'code': 'token_expired', 'description': 'token is expired'}), 401
     except jwt.DecodeError:
         return jsonify({'code': 'token_invalid_signature', 'description': 'Token signature is invalid'}), 401
-
     g.current_user = user = payload
     return f(*args, **kwargs)
-
   return decorated """
+
+"""              API: PROFILE MANAGEMENT              """
+
+@app.route('/api/users/<user_id>', methods = ['GET'])
+def getUser(user_id):
+    user = Users.query.filter_by(id = user_id).all()
+    if len(user) !=0:
+        for u in user:
+            uid = u.id
+            username = u.username
+            password = u.password
+            name = u.name
+            email = u.email
+            location = u.location
+            biography = u.biography
+            photo = u.photo
+            date_joined = u.date_joined
+
+        result = {'id': uid, "username": username, "password": password, "name": name, "email": email, "location": location, "biography": biography, "photo": photo, "date_joined": date_joined}
+        return jsonify({'result':result}), 200
+    elif len(user) == 0: 
+        return jsonify({"result": user}), 404
+    else:
+        # idealy need to figure out how to check the user is authenticated and token valid for a 401
+        return jsonify({'error': "Access token is missing or invalid"}), 401
+
+
+@app.route('/api/users/<user_id>/favourites', methods = ['GET'])
+def getUserFavourites(user_id):
+    fave = Favourites.query.filter_by(user_id = user_id).all()
+    
+    result = []
+    if len(fave) !=0:
+        for f in fave:
+            carid = f.car_id
+            userid = f.user_id
+            
+            fresult = {'carid': carid, "userid": userid}
+            result.append(fresult)
+        return jsonify({'result':result}), 200
+    elif len(fave) == 0: 
+        return jsonify({"result": result}), 404
+    else:
+        # idealy need to figure out how to check the user is authenticated and token valid for a 401
+        return jsonify({'error': "Access token is missing or invalid"}), 401
+
+
+
+
+
 
 
 """              API: CARS              """
