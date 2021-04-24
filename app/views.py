@@ -126,6 +126,7 @@ def login():
                 'token': token
             }
 
+            #send api response
             return jsonify({'result': result}), 200
         else:
             # abort(400) #bad request http code
@@ -137,7 +138,7 @@ def login():
 @login_manager.user_loader
 def load_user(id):
     return Users.query.get(int(id))
-    
+
 
 @app.route('/api/auth/logout', methods=['POST'])
 #@login_required
@@ -150,6 +151,54 @@ def logout():
     }
 
     return jsonify({'result': result}), 200
+
+@app.route('/api/search', methods=['GET'])
+#@login_required
+@requires_auth
+def search(): 
+    make = request.args.get("make")
+    model = request.args.get("model")
+
+    if make is not None and model is not None:      #both make and model
+        cars = Cars.query.filter_by(make = make).filter_by(model=model).all()
+              
+    elif request.args.get("make") is not None and request.args.get("model") is None:    #only make
+        cars = Cars.query.filter_by(make = make).all()
+        
+    elif request.args.get("make") is None and request.args.get("model") is not None:   #only model
+        cars = Cars.query.filter_by(model=model).all()
+     
+    else:    #neither
+        return jsonify({'result': []}), 404 #Not Found
+
+    #if cars found matching criteria
+    if cars is not None:
+        #build api response with car data
+        carResults = []
+
+        for car in cars:
+            carResults.append( 
+                {
+                    'id': car.id, 
+                    'description': car.description,
+                    'year': car.year,
+                    'make': car.make,
+                    'model': car.model,
+                    'colour': car.colour,
+                    'transmission': car.transmission,
+                    'car_type': car.car_type,
+                    'price': car.price,
+                    'photo': car.photo,
+                    'user_id': car.user_id
+                }
+            )
+
+        #send api response
+        return jsonify({'result': carResults}), 200
+    else:
+        return jsonify({'result': []}), 404 #Not Found
+        
+
 
 
 # Please create all new routes and view functions above this route.
