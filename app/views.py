@@ -107,22 +107,45 @@ def getUserFavourites(user_id):
 # @requires_auth
 def addCars():
     # consider that youll be sending 
-     carid = request.form['id']
-     description = request.form['description']
-     year = request.form['year']
-     make = request.form['make']
-     model = request.form['model']
-     color = request.form['color']
-     transmission = request.form['transmission']
-     car_type = request.form['car_type']
-     price = request.form['price']
-     photo = request.form['photo']
-     user_id = request.form['photo']
+    if request.form:
+    #create new car details
+        car = Cars(
+            carid = request.form['id'],
+            description = request.form['description'],
+            year = request.form['year'],
+            make = request.form['make'],
+            model = request.form['model'],
+            color = request.form['color'],
+            transmission = request.form['transmission'],
+            car_type = request.form['car_type'],
+            price = request.form['price'],
+            photo = request.form.get('photo',""),
+            user_id = request.form['user_id']
+        )
 
-    db.session.add(Cars(carid= id, description = description, year = year, make = make, model = model, color = colour, transmission = transmission, car_type = car_type, price = price, photo = photo, user_id = user_id)) 
-    db.session.commit()
+        #add car to db
+        db.session.add(car)
+        db.session.commit()
 
-    return jsonify({"message":"Car Successfully Added", "car_id":user_id}), 200
+        newC = Cars.query.filter_by(carid = request.form['id']).first()
+
+        carRes = {
+            'carid': newC.id,
+            'description': newC.description,
+            'year' : newC.year,
+            'make' : newC.make,
+            'model' : newC.model,
+            'color' : newC.colour,
+            'transmission' : newC.transmission,
+            'car_type' : newC.car_type,
+            'price' : newC.price,
+            'photo' : newC.photo,
+            'user_id' : newC.user_id
+        } 
+
+        return jsonify({"Car":carRes}), 201
+    else:
+        return jsonify({'Car':[]}), 400
 
 @app.route('/api/cars', methods = ['GET'])
 # @requires_auth
