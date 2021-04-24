@@ -97,6 +97,7 @@ def register():
     #    abort(400) #bad request http code
         return jsonify({'user': []}), 400
 
+
 @app.route('/api/auth/login', methods=['POST'])
 def login(): 
     if not request.json or not 'username' in request.json or not 'password' in request.json:
@@ -130,6 +131,26 @@ def login():
             # abort(400) #bad request http code
             return jsonify({'result': []}), 400
         
+
+# user_loader callback. This callback is used to reload the user object from
+# the user ID stored in the session
+@login_manager.user_loader
+def load_user(id):
+    return Users.query.get(int(id))
+    
+
+@app.route('/api/auth/logout', methods=['POST'])
+#@login_required
+@requires_auth
+def logout(): 
+    logout_user()
+    #build api response 
+    result = {
+        'message': 'Log out successful'
+    }
+
+    return jsonify({'result': result}), 200
+
 
 # Please create all new routes and view functions above this route.
 # This route is now our catch all route for our VueJS single page
