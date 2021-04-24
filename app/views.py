@@ -17,36 +17,47 @@ import datetime
 import jwt
 from flask import _request_ctx_stack
 from functools import wraps
+import datetime
 
-"""     JWT     """
+"""                              JWT                          """
+# Create a JWT @requires_auth decorator
+# This decorator can be used to denote that a specific route should check
+# for a valid JWT token before displaying the contents of that route.
 def requires_auth(f):
   @wraps(f)
   def decorated(*args, **kwargs):
     auth = request.headers.get('Authorization', None) # or request.cookies.get('token', None)
+
     if not auth:
       return jsonify({'code': 'authorization_header_missing', 'description': 'Authorization header is expected'}), 401
+
     parts = auth.split()
+
     if parts[0].lower() != 'bearer':
       return jsonify({'code': 'invalid_header', 'description': 'Authorization header must start with Bearer'}), 401
     elif len(parts) == 1:
       return jsonify({'code': 'invalid_header', 'description': 'Token not found'}), 401
     elif len(parts) > 2:
       return jsonify({'code': 'invalid_header', 'description': 'Authorization header must be Bearer + \s + token'}), 401
+
     token = parts[1]
     try:
         payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+
     except jwt.ExpiredSignatureError:
         return jsonify({'code': 'token_expired', 'description': 'token is expired'}), 401
     except jwt.DecodeError:
         return jsonify({'code': 'token_invalid_signature', 'description': 'Token signature is invalid'}), 401
+
     g.current_user = user = payload
     return f(*args, **kwargs)
-  return decorated 
+
+  return decorated
 
 ###
 # Routing for your application.
 ###
-"""              API: AUTHENTICATION              """
+"""              API: AUTHENTICATION & SEARCH              """
 
 # This route doesn't require a JWT
 @app.route('/api/register', methods=['POST'])
@@ -141,7 +152,6 @@ def load_user(id):
 
 
 @app.route('/api/auth/logout', methods=['POST'])
-#@login_required
 @requires_auth
 def logout(): 
     logout_user()
@@ -153,7 +163,6 @@ def logout():
     return jsonify({'result': result}), 200
 
 @app.route('/api/search', methods=['GET'])
-#@login_required
 @requires_auth
 def search(): 
     make = request.args.get("make")
@@ -197,8 +206,165 @@ def search():
         return jsonify({'result': carResults}), 200
     else:
         return jsonify({'result': []}), 404 #Not Found
+
+
+
+"""              API: CARS              """
+
+@app.route('/api/cars', methods = ['GET'])
+@requires_auth
+def getAllCars():
+    cars = db.session.query(Cars).all()
+    result = []
+    if len(cars) != 0:
+        for c in cars:
+            id = c.id
+            description = c.description
+            year = c.year
+            make = c.make
+            model = c.model
+            color = c.colour
+            transmission = c.transmission
+            car_type = c.car_type
+            price = c.price
+            photo = c.photo
+            user_id = c.user_id
+            cresult = {'id': id, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
+            result.append(cresult)
+        return jsonify({'result': result}), 200
+    elif len(cars) == 0: 
+        return jsonify({"result": cars}), 404
+    else: 
+        # idealy need to figure out how to check the user is authenticated and token valid for a 401
+        return jsonify({'result': "Access token is missing or invalid"}), 401
+
+
+@app.route('/api/cars/<car_id>', methods = ['GET'])
+@requires_auth
+def getcar(car_id):
+    car = Cars.query.filter_by(id = car_id).all()  # .all() is used on the BaseQuery to return an array for the results, allowing us to evaluate if we got no reult
+
+    if len(car) !=0:
+        for c in car:
+            cid = c.id
+            description = c.description
+            year = c.year
+            make = c.make
+            model = c.model
+            color = c.colour
+            transmission = c.transmission
+            car_type = c.car_type
+            price = c.price
+            photo = c.photo
+            user_id = c.user_id
+   
+        result = {'id': cid, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
+        return jsonify({'result':result}), 200
+    elif len(car) == 0: 
+        return jsonify({"result": car}), 404
+    else:
+        return jsonify({'result': "Access token is missing or invalid"}), 401
         
 
+@app.route('/api/cars/<car_id>/unfavourite', methods= ["PUT"])
+@requires_auth
+def rmvCarTFav(car_id):
+    if g.current_user:
+        user_id = (g.current_user).id
+        favToDel = Favourites.query.filter_by(car_id=car_id).first()
+        db.session.delete(favToDel)
+        db.session.commit()
+
+        return jsonify({"result":"Car Successfully UnFavourited", "car_id":user_id}), 200
+    else:
+       return jsonify({"result": "Access token is missing or invalid"}), 401 
+
+
+@app.route('/api/cars/<car_id>/favourite', methods= ["PUT"])
+@requires_auth
+def addCarToFav(car_id):
+    if g.current_user:
+        user_id = (g.current_user).id
+        db.session.add(Favourites(car_id=car_id, user_id=user_id)) 
+        db.session.commit()
+        return jsonify({"result":"Car Successfully Favourited", "car_id":car_id}), 200
+    else:
+       return jsonify({"result": "Access token is missing or invalid"}), 401 
+
+
+"""              API: PROFILE MANAGEMENT              """
+
+@app.route('/api/users/<user_id>', methods = ['GET'])
+@requires_auth
+def getUser(user_id):
+    user = Users.query.filter_by(id = user_id).all()
+    if len(user) !=0:
+        for u in user:
+            uid = u.id
+            username = u.username
+            password = u.password
+            name = u.name
+            email = u.email
+            location = u.location
+            biography = u.biography
+            photo = u.photo
+            date_joined = u.date_joined
+
+        result = {'id': uid, "username": username, "password": password, "name": name, "email": email, "location": location, "biography": biography, "photo": photo, "date_joined": date_joined}
+        return jsonify({'result':result}), 200
+    elif len(user) == 0: 
+        return jsonify({"result": user}), 404
+    else:
+        # idealy need to figure out how to check the user is authenticated and token valid for a 401
+        return jsonify({'result': "Access token is missing or invalid"}), 401
+
+
+@app.route('/api/users/<user_id>/favourites', methods = ['GET'])
+@requires_auth
+def getUserFavourites(user_id):
+    fave = Favourites.query.filter_by(user_id = user_id).all()
+    
+    result = []
+    if len(fave) !=0:
+        for f in fave:
+            carid = f.car_id
+            userid = f.user_id
+            
+            fresult = {'carid': carid, "userid": userid}
+            result.append(fresult)
+        return jsonify({'result':result}), 200
+    elif len(fave) == 0: 
+        return jsonify({"result": result}), 404
+    else:
+        # idealy need to figure out how to check the user is authenticated and token valid for a 401
+        return jsonify({'result': "Access token is missing or invalid"}), 401
+
+@app.route('/api/cars', methods = ['POST'])
+@requires_auth
+def addCars():
+    # consider that youll be sending 
+    if request.form:
+    #create new car details
+        car = Cars(
+            description = request.form['description'],
+            make = request.form['make'],
+            model = request.form['model'],
+            colour = request.form['color'],
+            year = request.form['year'],
+            transmission = request.form['transmission'],
+            car_type = request.form['car_type'],
+            price = request.form['price'],
+            photo = request.form.get('photo',""),
+            user_id = request.form['user_id']
+        )
+
+        #add car to db
+        db.session.add(car)
+        db.session.commit()
+
+        return jsonify({"result": "Car successfully Created"}), 201
+    else:
+        return jsonify({'result':[]}), 400
 
 
 # Please create all new routes and view functions above this route.
