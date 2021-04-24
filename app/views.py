@@ -89,7 +89,7 @@ def register():
         return jsonify({'user': userResult}), 201
     else:
     #     abort(400) #bad request http code
-          return jsonify({'user': []}), 200
+          return jsonify({'user': []}), 400
 
 # Please create all new routes and view functions above this route.
 # This route is now our catch all route for our VueJS single page
