@@ -103,6 +103,26 @@ def getUserFavourites(user_id):
 
 
 """              API: CARS              """
+@app.route('/api/cars', methods = ['POST'])
+# @requires_auth
+def addCars():
+    # consider that youll be sending 
+     carid = request.form['id']
+     description = request.form['description']
+     year = request.form['year']
+     make = request.form['make']
+     model = request.form['model']
+     color = request.form['color']
+     transmission = request.form['transmission']
+     car_type = request.form['car_type']
+     price = request.form['price']
+     photo = request.form['photo']
+     user_id = request.form['photo']
+
+    db.session.add(Cars(carid= id, description = description, year = year, make = make, model = model, color = colour, transmission = transmission, car_type = car_type, price = price, photo = photo, user_id = user_id)) 
+    db.session.commit()
+
+    return jsonify({"message":"Car Successfully Added", "car_id":user_id}), 200
 
 @app.route('/api/cars', methods = ['GET'])
 # @requires_auth
