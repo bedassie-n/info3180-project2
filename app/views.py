@@ -5,15 +5,21 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 import os
-from datetime import datetime, timezone
-from app import app, db
+from app import app, db, login_manager
 from flask import render_template, request, redirect, url_for, flash, send_from_directory, abort, jsonify, g, make_response
-from werkzeug.utils import secure_filename
+from flask_login import login_user, logout_user, current_user, login_required
 from app.models import Users, Favourites, Cars
+from werkzeug.security import check_password_hash
+#from datetime import datetime, timezone
+import datetime
 
+# Using JWT
+import jwt
+from flask import _request_ctx_stack
+from functools import wraps
 
 """     JWT     """
-""" def requires_auth(f):
+def requires_auth(f):
   @wraps(f)
   def decorated(*args, **kwargs):
     auth = request.headers.get('Authorization', None) # or request.cookies.get('token', None)
@@ -35,7 +41,7 @@ from app.models import Users, Favourites, Cars
         return jsonify({'code': 'token_invalid_signature', 'description': 'Token signature is invalid'}), 401
     g.current_user = user = payload
     return f(*args, **kwargs)
-  return decorated """
+  return decorated 
 
 ###
 # Routing for your application.
@@ -53,7 +59,7 @@ def register():
     #if not request.form: # or not 'username' in request.form or not 'password' in request.form or not 'name' in request.form or not 'email' in request.form:
      #  abort(400) #bad request http code
 
-    if request.form:
+    if request.form: #TBD:update to check for essentials
         # create user 
         user = Users (
             username = request.form['username'],
@@ -63,7 +69,7 @@ def register():
             location = request.form.get('location', ""),
             biography = request.form.get('biography', ""),
             photo = request.form.get('photo', ""),
-            date_joined =  datetime.now(timezone.utc)
+            date_joined =  datetime.datetime.now(datetime.timezone.utc)
         )
 
         #add user to db
@@ -88,8 +94,42 @@ def register():
         #send api response
         return jsonify({'user': userResult}), 201
     else:
-    #     abort(400) #bad request http code
-          return jsonify({'user': []}), 400
+    #    abort(400) #bad request http code
+        return jsonify({'user': []}), 400
+
+@app.route('/api/auth/login', methods=['POST'])
+def login(): 
+    if not request.json or not 'username' in request.json or not 'password' in request.json:
+       abort(400) #bad request http code
+    else:
+        username = request.json['username']
+        password = request.json['password']
+
+        user = Users.query.filter_by(username=username).first()
+
+        if user is not None and check_password_hash(user.password, password):
+            login_user(user)
+
+            #generate JWT token
+            payload = {
+                'sub': user.id, #technical identifier of the user
+                'name': user.name,
+                'iat': datetime.datetime.now(datetime.timezone.utc), #current time -- generate timestamp
+                'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=10) #token expires in 10 mins -- generate timestamp
+            }
+            token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+
+            #build api response 
+            result = {
+                'message': 'Login successful',
+                'token': token
+            }
+
+            return jsonify({'result': result}), 200
+        else:
+            # abort(400) #bad request http code
+            return jsonify({'result': []}), 400
+        
 
 # Please create all new routes and view functions above this route.
 # This route is now our catch all route for our VueJS single page
