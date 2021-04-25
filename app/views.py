@@ -212,7 +212,7 @@ def search():
 """              API: CARS              """
 
 @app.route('/api/cars', methods = ['GET'])
-@requires_auth
+# @requires_auth
 def getAllCars():
     cars = db.session.query(Cars).all()
     result = []
@@ -240,7 +240,7 @@ def getAllCars():
 
 
 @app.route('/api/cars/<car_id>', methods = ['GET'])
-@requires_auth
+# @requires_auth
 def getcar(car_id):
     car = Cars.query.filter_by(id = car_id).all()  # .all() is used on the BaseQuery to return an array for the results, allowing us to evaluate if we got no reult
 
@@ -266,9 +266,9 @@ def getcar(car_id):
         return jsonify({'result': "Access token is missing or invalid"}), 401
         
 
-@app.route('/api/cars/<car_id>/unfavourite', methods= ["PUT"])
+@app.route('/api/cars/<car_id>/unfavourite', methods= ["POST"])
 @requires_auth
-def rmvCarTFav(car_id):
+def rmvCarFromFav(car_id):
     if g.current_user:
         user_id = (g.current_user).id
         favToDel = Favourites.query.filter_by(car_id=car_id).first()
@@ -280,7 +280,7 @@ def rmvCarTFav(car_id):
        return jsonify({"result": "Access token is missing or invalid"}), 401 
 
 
-@app.route('/api/cars/<car_id>/favourite', methods= ["PUT"])
+@app.route('/api/cars/<car_id>/favourite', methods= ["POST"])
 @requires_auth
 def addCarToFav(car_id):
     if g.current_user:
@@ -295,7 +295,7 @@ def addCarToFav(car_id):
 """              API: PROFILE MANAGEMENT              """
 
 @app.route('/api/users/<user_id>', methods = ['GET'])
-@requires_auth
+# @requires_auth
 def getUser(user_id):
     user = Users.query.filter_by(id = user_id).all()
     if len(user) !=0:
@@ -320,7 +320,7 @@ def getUser(user_id):
 
 
 @app.route('/api/users/<user_id>/favourites', methods = ['GET'])
-@requires_auth
+# @requires_auth
 def getUserFavourites(user_id):
     fave = Favourites.query.filter_by(user_id = user_id).all()
     
