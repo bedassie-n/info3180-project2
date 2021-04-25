@@ -104,7 +104,15 @@ def register():
         }
 
         #send api response
-        return jsonify({'user': userResult}), 201
+        # return jsonify({'user': userResult}), 201
+        return jsonify({'id': newUser.id, \
+                        'username': newUser.username,   \
+                        'name': newUser.name,   \
+                        'email': newUser.email, \
+                        'location': newUser.location,   \
+                        'biography': newUser.biography, \
+                        'photo': newUser.photo, \
+                        'date_joined': newUser.date_joined}), 201
     else:
     #    abort(400) #bad request http code
         return jsonify({'user': []}), 400
@@ -132,14 +140,14 @@ def login():
             }
             token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
 
-            #build api response 
-            result = {
-                'message': 'Login successful',
-                'token': token
-            }
+            # #build api response 
+            # result = {
+            #     'message': 'Login successful',
+            #     'token': token
+            # }
 
             #send api response
-            return jsonify({'result': result}), 200
+            return jsonify({'message': 'Login successful', 'token': token}), 200
         else:
             # abort(400) #bad request http code
             return jsonify({'result': []}), 400
@@ -157,11 +165,11 @@ def load_user(id):
 def logout(): 
     logout_user()
     #build api response 
-    result = {
-        'message': 'Log out successful'
-    }
+    # result = {
+    #     'message': 'Log out successful'
+    # }
 
-    return jsonify({'result': result}), 200
+    return jsonify({'message': 'Log out successful'}), 200
 
 @app.route('/api/search', methods=['GET'])
 @requires_auth
@@ -213,35 +221,120 @@ def search():
 """              API: CARS              """
 
 @app.route('/api/cars', methods = ['GET'])
-# @requires_auth
+@requires_auth
 def getAllCars():
-    cars = db.session.query(Cars).all()
-    result = []
-    if len(cars) != 0:
-        for c in cars:
-            id = c.id
-            description = c.description
-            year = c.year
-            make = c.make
-            model = c.model
-            color = c.colour
-            transmission = c.transmission
-            car_type = c.car_type
-            price = c.price
-            photo = c.photo
-            user_id = c.user_id
-            cresult = {'id': id, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
-            result.append(cresult)
-        return jsonify({'result': result}), 200
-    elif len(cars) == 0: 
-        return jsonify({"result": cars}), 404
-    else: 
-        # idealy need to figure out how to check the user is authenticated and token valid for a 401
-        return jsonify({'result': "Access token is missing or invalid"}), 401
+    if request.method == 'GET':
+        cars = db.session.query(Cars).all()
+        result = []
+        if len(cars) != 0:
+            for c in cars:
+                id = c.id
+                description = c.description
+                year = c.year
+                make = c.make
+                model = c.model
+                color = c.colour
+                transmission = c.transmission
+                car_type = c.car_type
+                price = c.price
+                photo = c.photo
+                user_id = c.user_id
+                cresult = {'id': id, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
+                result.append(cresult)
+            return jsonify({'result': result}), 200
+        elif len(cars) == 0: 
+            return jsonify({"result": cars}), 404
+        else: 
+            # idealy need to figure out how to check the user is authenticated and token valid for a 401
+            return jsonify({'result': "Access token is missing or invalid"}), 401
+
+
+@app.route('/api/cars', methods = ['POST'])
+@requires_auth
+def addCars():
+    # # consider that youll be sending 
+    # if request.form:
+    # #create new car details
+    #     car = Cars(
+    #         description = request.form['description'],
+    #         make = request.form['make'],
+    #         model = request.form['model'],
+    #         colour = request.form['color'],
+    #         year = request.form['year'],
+    #         transmission = request.form['transmission'],
+    #         car_type = request.form['car_type'],
+    #         price = request.form['price'],
+    #         photo = request.form.get('photo',""),
+    #         user_id = request.form['user_id']
+    #     )
+
+    #     #add car to db
+    #     db.session.add(car)
+    #     db.session.commit()
+
+    #     return jsonify({"result": "Car successfully Created"}), 201
+    # else:
+    #     return jsonify({'result':[]}), 400
+
+    if request.json:
+        car = Cars(
+            description = request.json['description'],
+            year = request.json['year'],
+            make = request.json['make'],
+            model = request.json['model'],
+            colour = request.json['colour'],
+            transmission = request.json['transmission'],
+            car_type = request.json['car_type'],
+            price = request.json['price'],
+            photo = request.json.get('photo', ""),
+            user_id = request.json['user_id']
+        )
+
+        #add car to db
+        db.session.add(car)
+        db.session.commit()
+
+        #get the car from the db (using description, user_id and photo to identify)
+        newCar = Cars.query.filter_by(description = request.json['description']) \
+                            .filter_by(user_id = request.json['user_id']) \
+                            .filter_by(photo = request.json['photo']) \
+                            .first()
+
+        #build api response with car data
+        # carResult = {
+        #     'id': newCar.id, 
+        #     'description': newCar.description,
+        #     'year': newCar.year,
+        #     'make': newCar.make,
+        #     'model': newCar.model,
+        #     'colour': newCar.colour,
+        #     'transmission': newCar.transmission,
+        #     'car_type': newCar.car_type,
+        #     'price': newCar.price,
+        #     'photo': newCar.photo,
+        #     'user_id': newCar.user_id
+        # }
+
+        #send api response
+        # return jsonify({'car': carResult}), 201
+        return jsonify({'id': newCar.id, 
+                        'description': newCar.description,  \
+                        'year': newCar.year,    \
+                        'make': newCar.make,    \
+                        'model': newCar.model,  \
+                        'colour': newCar.colour,    \
+                        'transmission': newCar.transmission,    \
+                        'car_type': newCar.car_type,    \
+                        'price': newCar.price,  \
+                        'photo': newCar.photo,  \
+                        'user_id': newCar.user_id}), 201
+    else:
+    #    abort(400) #bad request http code
+        return jsonify({'car': []}), 400
 
 
 @app.route('/api/cars/<car_id>', methods = ['GET'])
-# @requires_auth
+@requires_auth
 def getcar(car_id):
     car = Cars.query.filter_by(id = car_id).all()  # .all() is used on the BaseQuery to return an array for the results, allowing us to evaluate if we got no reult
 
@@ -259,8 +352,9 @@ def getcar(car_id):
             photo = c.photo
             user_id = c.user_id
    
-        result = {'id': cid, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
-        return jsonify({'result':result}), 200
+        #result = {'id': cid, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
+        #return jsonify({'result':result}), 200
+        return jsonify({'id': cid, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}), 200
     elif len(car) == 0: 
         return jsonify({"result": car}), 404
     else:
@@ -271,24 +365,24 @@ def getcar(car_id):
 @requires_auth
 def rmvCarFromFav(car_id):
     if g.current_user:
-        user_id = (g.current_user).id
+        user_id = (g.current_user)['sub']
         favToDel = Favourites.query.filter_by(car_id=car_id).first()
         db.session.delete(favToDel)
         db.session.commit()
 
-        return jsonify({"result":"Car Successfully UnFavourited", "car_id":user_id}), 200
+        return jsonify({"message":"Car Successfully UnFavourited", "car_id":car_id}), 200
     else:
        return jsonify({"result": "Access token is missing or invalid"}), 401 
 
 
-@app.route('/api/cars/<car_id>/favourite', methods= ["POST"])
+@app.route('/api/cars/<car_id>/favourites', methods= ["POST"])
 @requires_auth
 def addCarToFav(car_id):
     if g.current_user:
-        user_id = (g.current_user).id
+        user_id = (g.current_user)['sub']
         db.session.add(Favourites(car_id=car_id, user_id=user_id)) 
         db.session.commit()
-        return jsonify({"result":"Car Successfully Favourited", "car_id":car_id}), 200
+        return jsonify({"message":"Car Successfully Favourited", "car_id":car_id}), 200
     else:
        return jsonify({"result": "Access token is missing or invalid"}), 401 
 
@@ -311,8 +405,9 @@ def getUser(user_id):
             photo = u.photo
             date_joined = u.date_joined
 
-        result = {'id': uid, "username": username, "password": password, "name": name, "email": email, "location": location, "biography": biography, "photo": photo, "date_joined": date_joined}
-        return jsonify({'result':result}), 200
+        # result = {'id': uid, "username": username, "password": password, "name": name, "email": email, "location": location, "biography": biography, "photo": photo, "date_joined": date_joined}
+        # return jsonify({'result':result}), 200
+        return jsonify({'id': uid, "username": username, "password": password, "name": name, "email": email, "location": location, "biography": biography, "photo": photo, "date_joined": date_joined}), 200
     elif len(user) == 0: 
         return jsonify({"result": user}), 404
     else:
@@ -340,32 +435,6 @@ def getUserFavourites(user_id):
         # idealy need to figure out how to check the user is authenticated and token valid for a 401
         return jsonify({'result': "Access token is missing or invalid"}), 401
 
-@app.route('/api/cars', methods = ['POST'])
-@requires_auth
-def addCars():
-    # consider that youll be sending 
-    if request.form:
-    #create new car details
-        car = Cars(
-            description = request.form['description'],
-            make = request.form['make'],
-            model = request.form['model'],
-            colour = request.form['color'],
-            year = request.form['year'],
-            transmission = request.form['transmission'],
-            car_type = request.form['car_type'],
-            price = request.form['price'],
-            photo = request.form.get('photo',""),
-            user_id = request.form['user_id']
-        )
-
-        #add car to db
-        db.session.add(car)
-        db.session.commit()
-
-        return jsonify({"result": "Car successfully Created"}), 201
-    else:
-        return jsonify({'result':[]}), 400
 
 
 # Please create all new routes and view functions above this route.
