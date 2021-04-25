@@ -10,6 +10,7 @@ from flask import render_template, request, redirect, url_for, flash, send_from_
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import Users, Favourites, Cars
 from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
 #from datetime import datetime, timezone
 import datetime
 
@@ -78,6 +79,13 @@ def register():
      #  abort(400) #bad request http code
 
     if request.form: #TBD:update to check for essentials
+        # get photo filename
+        rawPhoto = request.files['photo']
+        filename = secure_filename(rawPhoto.filename)
+        rawPhoto.save(os.path.join(
+            app.config['UPLOAD_FOLDER'], filename
+        ))
+        
         # create user 
         user = Users (
             username = request.form['username'],
@@ -86,7 +94,8 @@ def register():
             email = request.form['email'],
             location = request.form.get('location', ""),
             biography = request.form.get('biography', ""),
-            photo = request.form.get('photo', ""),
+            # photo = request.form.get('photo', ""),
+            photo = filename,
             date_joined =  datetime.datetime.now(datetime.timezone.utc)
         )
 
@@ -108,7 +117,7 @@ def register():
             'photo': newUser.photo,
             'date_joined': newUser.date_joined
         }
-
+        
         #send api response
         # return jsonify({'user': userResult}), 201
         return jsonify({'id': newUser.id, \
