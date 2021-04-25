@@ -290,7 +290,9 @@ const Register = {
   name: 'Register',
   template:`
   <section id="register-page">
-      <div class="register-form">
+    <div class="row">
+      <div class="col-sm"></div>
+      <div class="register-form col-lg-7">
         <h3 class="font-weight-bold display-5">
           Register New User
         </h3>
@@ -344,6 +346,8 @@ const Register = {
             </div>
         </form>
       </div>
+      <div class="col-sm"></div>
+    </div>
   </section>
   `,
   created(){
@@ -357,7 +361,7 @@ const Register = {
       fetch("/api/register", {
           method: 'POST',
           body: form_data,
-          headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
+          credentials: 'same-origin'
       })    
           .then(function (response) {        
               return response.json();
