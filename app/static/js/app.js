@@ -262,7 +262,7 @@ const loginComponent = {
         fetch("/api/auth/login", {
             method: 'POST',
             body: form_data,
-            headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
+            // headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
         })    
           .then(function (response) {        
               return response.json();
@@ -356,8 +356,8 @@ const Register = {
       let self = this;
       fetch("/api/register", {
           method: 'POST',
-          body: form_data,
-          headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
+          body: form_data
+          // headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
       })    
           .then(function (response) {        
               return response.json();
@@ -469,7 +469,7 @@ const NewCar = {
       fetch("/api/cars", {
           method: 'POST',
           body: form_data,
-          headers: {'X-CSRFToken': token    },
+          // headers: {'X-CSRFToken': token    },
           credentials: 'same-origin'
       })    
           .then(function (response) {        
@@ -604,7 +604,7 @@ const ViewCar = {
         fetch(`api/cars/${self.car.id}/favourite`,{
           method: 'POST',
           body: JSON.stringify({user_id:0, car_id:self.car.id}), // for testing
-          headers: {'X-CSRFToken': token    },
+          // headers: {'X-CSRFToken': token    },
           credentials: 'same-origin'
         })
         .then(function (response) {
