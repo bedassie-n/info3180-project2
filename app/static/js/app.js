@@ -234,24 +234,56 @@ const Home = {
 };
 
 const loginComponent = {
-     name: 'login',
-    template: `<div class="login-form">
-    <h2 class="text-center">Login to your account</h2>       
-    <form action="/examples/actions/confirmation.php" method="post">
-        <div class="form-group">
-        <label for="username" class="font-weight-bold">Username</label>
-            <input type="text" class="form-control"  required="required" name="username">
-        </div>
-        <div class="form-group">
-         <label for="password" class="font-weight-bold">Password</label>
-            <input type="password" class="form-control" required="required" name="password">
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block log-btn-class">Log in</button>
-        </div>
-          
-    </form>
-</div>`
+    name: 'login',
+    template: `
+      <div class="login-form">
+        <h2 class="text-center">Login to your account</h2>       
+        <form action="/examples/actions/confirmation.php" method="post">
+            <div class="form-group">
+              <label for="username" class="font-weight-bold">Username</label>
+              <input type="text" class="form-control"  required="required" name="username">
+            </div>
+            <div class="form-group">
+              <label for="password" class="font-weight-bold">Password</label>
+              <input type="password" class="form-control" required="required" name="password">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block log-btn-class">Log in</button>
+            </div> 
+        </form>
+      </div>
+    `
+    ,
+    methods:{
+      login(){
+      let login_form = document.querySelector(".login-form form")
+      let form_data = new FormData(login_form);
+      let self = this;
+      fetch("/api/auth/login", {
+          method: 'POST',
+          body: form_data,
+          headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
+      })    
+          .then(function (response) {        
+              return response.json();
+              })    
+          .then(function (jsonResponse) {
+              // display a success message
+              console.log(jsonResponse);
+              self.message=jsonResponse.message;
+            })    
+          .catch(function (error) {
+              console.log(error); 
+              self.error=error.message;   
+          });
+      }
+    },
+    data: function(){
+      return {
+          message: "",
+          error: "",
+      }
+  }
 }
 
 const Register = {
