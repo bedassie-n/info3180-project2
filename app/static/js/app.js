@@ -256,14 +256,14 @@ const loginComponent = {
     ,
     methods:{
       login(){
-      let login_form = document.querySelector(".login-form form")
-      let form_data = new FormData(login_form);
-      let self = this;
-      fetch("/api/auth/login", {
-          method: 'POST',
-          body: form_data,
-          headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
-      })    
+        let login_form = document.querySelector(".login-form form")
+        let form_data = new FormData(login_form);
+        let self = this;
+        fetch("/api/auth/login", {
+            method: 'POST',
+            body: form_data,
+            headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
+        })    
           .then(function (response) {        
               return response.json();
               })    
@@ -276,14 +276,14 @@ const loginComponent = {
               console.log(error); 
               self.error=error.message;   
           });
+        }
+      },
+      data: function(){
+        return {
+            message: "",
+            error: "",
+        }
       }
-    },
-    data: function(){
-      return {
-          message: "",
-          error: "",
-      }
-  }
 }
 
 const Register = {
