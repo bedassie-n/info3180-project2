@@ -54,6 +54,7 @@ def requires_auth(f):
 
   return decorated
 
+
 ###
 # Routing for your application.
 ###
@@ -386,9 +387,11 @@ def index(path):
 def get_image(filename):
     return send_from_directory(os.path.join('..', app.config['UPLOAD_FOLDER']), filename)
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
 
 # Here we define a function to collect form errors from Flask-WTF
 # which we can later use
@@ -398,9 +401,9 @@ def form_errors(form):
     for field, errors in form.errors.items():
         for error in errors:
             message = u"Error in the %s field - %s" % (
-                    getattr(form, field).label.text,
-                    error
-                )
+                getattr(form, field).label.text,
+                error
+            )
             error_messages.append(message)
 
     return error_messages
