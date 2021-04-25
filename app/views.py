@@ -29,25 +29,31 @@ def requires_auth(f):
     auth = request.headers.get('Authorization', None) # or request.cookies.get('token', None)
 
     if not auth:
-      return jsonify({'code': 'authorization_header_missing', 'description': 'Authorization header is expected'}), 401
+      # return jsonify({'code': 'authorization_header_missing', 'description': 'Authorization header is expected'}), 401
+      return jsonify({'result': "Access token is missing or invalid"}), 401
 
     parts = auth.split()
 
     if parts[0].lower() != 'bearer':
-      return jsonify({'code': 'invalid_header', 'description': 'Authorization header must start with Bearer'}), 401
+      # return jsonify({'code': 'invalid_header', 'description': 'Authorization header must start with Bearer'}), 401
+      return jsonify({'result': "Access token is missing or invalid"}), 401
     elif len(parts) == 1:
-      return jsonify({'code': 'invalid_header', 'description': 'Token not found'}), 401
+      # return jsonify({'code': 'invalid_header', 'description': 'Token not found'}), 401
+      return jsonify({'result': "Access token is missing or invalid"}), 401
     elif len(parts) > 2:
-      return jsonify({'code': 'invalid_header', 'description': 'Authorization header must be Bearer + \s + token'}), 401
+      # return jsonify({'code': 'invalid_header', 'description': 'Authorization header must be Bearer + \s + token'}), 401
+      return jsonify({'result': "Access token is missing or invalid"}), 401
 
     token = parts[1]
     try:
         payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
 
     except jwt.ExpiredSignatureError:
-        return jsonify({'code': 'token_expired', 'description': 'token is expired'}), 401
+        # return jsonify({'code': 'token_expired', 'description': 'token is expired'}), 401
+        return jsonify({'result': "Access token is missing or invalid"}), 401
     except jwt.DecodeError:
-        return jsonify({'code': 'token_invalid_signature', 'description': 'Token signature is invalid'}), 401
+        # return jsonify({'code': 'token_invalid_signature', 'description': 'Token signature is invalid'}), 401
+        return jsonify({'result': "Access token is missing or invalid"}), 401
 
     g.current_user = user = payload
     return f(*args, **kwargs)
@@ -244,9 +250,9 @@ def getAllCars():
             return jsonify({'result': result}), 200
         elif len(cars) == 0: 
             return jsonify({"result": cars}), 404
-        else: 
-            # idealy need to figure out how to check the user is authenticated and token valid for a 401
-            return jsonify({'result': "Access token is missing or invalid"}), 401
+        # else: 
+        #     # idealy need to figure out how to check the user is authenticated and token valid for a 401
+        #     return jsonify({'result': "Access token is missing or invalid"}), 401
 
 
 @app.route('/api/cars', methods = ['POST'])
@@ -357,8 +363,8 @@ def getcar(car_id):
         return jsonify({'id': cid, "description": description, "make": make, "model": model, "color": color, "year": year, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}), 200
     elif len(car) == 0: 
         return jsonify({"result": car}), 404
-    else:
-        return jsonify({'result': "Access token is missing or invalid"}), 401
+    # else:
+    #     return jsonify({'result': "Access token is missing or invalid"}), 401
         
 
 @app.route('/api/cars/<car_id>/unfavourite', methods= ["POST"])
@@ -371,8 +377,8 @@ def rmvCarFromFav(car_id):
         db.session.commit()
 
         return jsonify({"message":"Car Successfully UnFavourited", "car_id":car_id}), 200
-    else:
-       return jsonify({"result": "Access token is missing or invalid"}), 401 
+    # else:
+    #    return jsonify({"result": "Access token is missing or invalid"}), 401 
 
 
 @app.route('/api/cars/<car_id>/favourites', methods= ["POST"])
@@ -383,8 +389,8 @@ def addCarToFav(car_id):
         db.session.add(Favourites(car_id=car_id, user_id=user_id)) 
         db.session.commit()
         return jsonify({"message":"Car Successfully Favourited", "car_id":car_id}), 200
-    else:
-       return jsonify({"result": "Access token is missing or invalid"}), 401 
+    # else:
+    #    return jsonify({"result": "Access token is missing or invalid"}), 401 
 
 
 """              API: PROFILE MANAGEMENT              """
@@ -410,9 +416,9 @@ def getUser(user_id):
         return jsonify({'id': uid, "username": username, "password": password, "name": name, "email": email, "location": location, "biography": biography, "photo": photo, "date_joined": date_joined}), 200
     elif len(user) == 0: 
         return jsonify({"result": user}), 404
-    else:
-        # idealy need to figure out how to check the user is authenticated and token valid for a 401
-        return jsonify({'result': "Access token is missing or invalid"}), 401
+    # else:
+    #     # idealy need to figure out how to check the user is authenticated and token valid for a 401
+    #     return jsonify({'result': "Access token is missing or invalid"}), 401
 
 
 @app.route('/api/users/<user_id>/favourites', methods = ['GET'])
@@ -431,9 +437,9 @@ def getUserFavourites(user_id):
         return jsonify({'result':result}), 200
     elif len(fave) == 0: 
         return jsonify({"result": result}), 404
-    else:
-        # idealy need to figure out how to check the user is authenticated and token valid for a 401
-        return jsonify({'result': "Access token is missing or invalid"}), 401
+    # else:
+    #     # idealy need to figure out how to check the user is authenticated and token valid for a 401
+    #     return jsonify({'result': "Access token is missing or invalid"}), 401
 
 
 
