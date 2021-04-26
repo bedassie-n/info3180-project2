@@ -1,5 +1,13 @@
 // Forked from info-3180-lab7
 
+// require
+// var Vue = require('vue')
+// Vue.use(require('vue-cookies'))
+
+// // es2015 module
+// import Vue from 'vue'
+// import VueCookies from 'vue-cookies';
+// Vue.use(VueCookies);
 
 const app = Vue.createApp({
   data() {
@@ -557,12 +565,43 @@ const NewCar = {
      addCar(){
       let car_form = document.querySelector("#new-car-form .register-form form")
       let form_data = new FormData(car_form);
+
+      let description  = form_data.get("description");
+      let year  = form_data.get("year");
+      let make  = form_data.get("make");
+      let model  = form_data.get("model");
+      let colour  = form_data.get("colour");
+      let transmission  = form_data.get("transmission");
+      let car_type  = form_data.get("car_type");
+      let price  = form_data.get("price");
+      let photo  = form_data.get("photo");
+      let user_id  = form_data.get("user_id");
+
+      let sub = {}
+      sub.description = description;
+      sub.year = year;
+      sub.make = make;
+      sub.model = model;
+      sub.colour = colour;
+      sub.transmission = transmission;
+      sub.car_type = car_type;
+      sub.price = price;
+      sub.photo = photo;
+      sub.user_id = user_id;
+      
       let self = this;
       fetch("/api/cars", {
           method: 'POST',
-          body: form_data,
-          headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
-          credentials: 'same-origin'
+          //body: form_data,
+          headers : {
+            'Accept': 'application/json',
+            "Content-Type":"application/json",
+            'Authorization': "Bearer " + localStorage.getItem("token")
+          },
+          body: JSON.stringify(sub)
+          // headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
+          // headers: {'Authorization': "Bearer " + this.$cookies.get("session")},
+          // credentials: 'same-origin'
       })    
           .then(function (response) {        
               return response.json();
@@ -761,7 +800,7 @@ const CardCarsList = {
     template:`<div class="container">
 <div class="row">
             <div v-for=" card in cars" class="card col-sm vehicle-list-card box-shadow-down" style="width: 18rem;">
-              <img class="img-fluid card-img-top" :src="card.picture" >
+              <img class="img-fluid card-img-top" :src="card.photo" >
               <div class="card-body">
                 <h5 class="card-title">{{card.year + " " + card.make}} <span><button class="price-chip "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tag" viewBox="0 0 16 16">
   <path d="M6 4.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1 0a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z"/>
@@ -775,32 +814,7 @@ const CardCarsList = {
 </div>`,
      data: function(){
       return {
-         cars:[
-             {
-                 id:1,   
-                 year:2020,
-                 make:"Lamborghini",
-                 model:"Huracan",
-                  price:"555,222",
-                 picture:"../static/images/default-car.jpg"
-             }
-             ,{
-                 id:2,
-                 year:2020,
-                 make:"Bugatti",
-                 model:"Chiron",
-                  price:"555,222",
-                picture:"../static/images/car.jpg"
-             }
-             ,{
-                 id:3,
-                 year:2018,
-                 make:"Tesla",
-                 model:"Model S",
-                 price:"555,222",
-                 picture:"../static/images/default-car.jpg"
-             }
-             ]
+         cars:[]
       }
   },
     mounted() {
@@ -817,8 +831,9 @@ const CardCarsList = {
         return response.json();
         })
     .then(function (jsonResponse) {
-        // display a success message
-        console.log(jsonResponse);
+        // stores cars data
+        console.log(jsonResponse.result);
+        self.cars = jsonResponse.result
       })
     .catch(function (error) {
         console.log(error);
