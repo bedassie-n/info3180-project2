@@ -331,6 +331,7 @@ const loginComponent = {
       }
 }
 
+// Responsive
 const Register = {
   name: 'Register',
   props: ['flashes'],
@@ -463,85 +464,89 @@ const NewCar = {
   name: 'NewCar',
   template:`
   <section id="new-car-page">
-      <div class="register-form">
-        <h3 class="font-weight-bold display-5">
-          Add New Car
-        </h3>
-        <form class="container" @submit.prevent="addCar" method="POST" enctype="multipart/form-data">
-            <div class="form-row">
-                <div class="col w-25 form-group">
-                    <label for="make">Make</label>
-                    <input class="form-control" id="make" type="text" name="make" placeholder="Tesla">
-                </div>
-                <div class="form-group col w-25">
-                    <label for="model">Model</label>
-                    <input class="form-control" id="model" type="text" name="model" placeholder="Model S">
-                </div> 
-            </div>
-            <div class="form-row">
-                <div class="form-group col w-15">
-                    <label for="colour">Colour</label>
-                    <input class="form-control" id="colour" name="colour" type="text" placeholder="Red">
-                </div>
-                <div class="form-group col w-25">
-                    <label for="year">Year</label>
-                    <input class="form-control" type="number" name="year" id="year" placeholder="2021">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col w-15">
-                    <label for="price">Price</label>
-                    <input class="form-control" id="price" name="price" type="text" placeholder="62700">
-                </div>
-                <div class="form-group col w-25">
-                    <label for="car_type">Car Type</label>
-                    <select id="car_type" class="form-control" name="car_type">
-                      <option selected>Choose...</option>
-                      <option>Sports Sedan</option>
-                      <option>Luxury Sedan</option>
-                      <option>Convertible</option>
-                      <option>Supercar</option>
-                      <option>Roadster</option>
-                      <option>SUV</option>
-                      <option>Truck</option>
-                      <option>Station Wagon</option>
-                      <option>Coupe</option>
-                      <option>Minivan</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col w-25">
-                    <label for="transmission">Transmission</label>
-                    <select id="transmission" class="form-control" name="transmission">
-                      <option selected>Automatic</option>
-                      <option>Manual</option>
-                      <option>Hybrid</option>
-                    </select>
-                </div>
-                <div class="col w-25"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col w-50">
-                    <label for="description">Description</label>
-                    <textarea class="form-control" id="description" name="description" type="text" rows=5></textarea>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col w-50">
-                  <div class="custom-file">
-                    <input type="file" class="custom-file-input font-weight-bold" name="photo" id="photo">
-                    <label class="custom-file-label" for="photo">Upload Photo</label>
+      <div class="row">
+        <div class="col-sm"></div>
+        <div class="register-form col-lg-7">
+          <h3 class="font-weight-bold display-5">
+            Add New Car
+          </h3>
+          <form class="container" @submit.prevent="addCar" method="POST" enctype="multipart/form-data">
+              <div class="form-row">
+                  <div class="col w-25 form-group">
+                      <label for="make">Make</label>
+                      <input class="form-control" id="make" type="text" name="make" placeholder="Tesla">
                   </div>
-                </div>
-                <div class="col w-50"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <button type="submit" class="btn">Save</button>
-                </div>
-            </div>
-        </form>
+                  <div class="form-group col w-25">
+                      <label for="model">Model</label>
+                      <input class="form-control" id="model" type="text" name="model" placeholder="Model S">
+                  </div> 
+              </div>
+              <div class="form-row">
+                  <div class="form-group col w-15">
+                      <label for="colour">Colour</label>
+                      <input class="form-control" id="colour" name="colour" type="text" placeholder="Red">
+                  </div>
+                  <div class="form-group col w-25">
+                      <label for="year">Year</label>
+                      <input class="form-control" type="number" name="year" id="year" placeholder="2021">
+                  </div>
+              </div>
+              <div class="form-row">
+                  <div class="form-group col w-15">
+                      <label for="price">Price</label>
+                      <input class="form-control" id="price" name="price" type="text" placeholder="62700">
+                  </div>
+                  <div class="form-group col w-25">
+                      <label for="car_type">Car Type</label>
+                      <select id="car_type" class="form-control" name="car_type">
+                        <option selected>Choose...</option>
+                        <option>Sports Sedan</option>
+                        <option>Luxury Sedan</option>
+                        <option>Convertible</option>
+                        <option>Supercar</option>
+                        <option>Roadster</option>
+                        <option>SUV</option>
+                        <option>Truck</option>
+                        <option>Station Wagon</option>
+                        <option>Coupe</option>
+                        <option>Minivan</option>
+                      </select>
+                  </div>
+              </div>
+              <div class="form-row">
+                  <div class="form-group col w-25">
+                      <label for="transmission">Transmission</label>
+                      <select id="transmission" class="form-control" name="transmission">
+                        <option selected>Automatic</option>
+                        <option>Manual</option>
+                        <option>Hybrid</option>
+                      </select>
+                  </div>
+                  <div class="col w-25"></div>
+              </div>
+              <div class="form-row">
+                  <div class="form-group col w-50">
+                      <label for="description">Description</label>
+                      <textarea class="form-control" id="description" name="description" type="text" rows=5></textarea>
+                  </div>
+              </div>
+              <div class="form-row">
+                  <div class="form-group col w-50">
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input font-weight-bold" name="photo" id="photo">
+                      <label class="custom-file-label" for="photo">Upload Photo</label>
+                    </div>
+                  </div>
+                  <div class="col w-50"></div>
+              </div>
+              <div class="form-row">
+                  <div class="form-group">
+                      <button type="submit" class="btn">Save</button>
+                  </div>
+              </div>
+          </form>
+        </div>
+        <div class="col-sm"></div>
       </div>
   </section>
   `,
