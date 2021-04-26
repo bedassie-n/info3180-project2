@@ -265,11 +265,11 @@ const loginComponent = {
         <form v-on:submit.prevent method="post">
             <div class="form-group">
               <label for="username" class="font-weight-bold">Username</label>
-              <input v-model="username" type="text" class="form-control"  required="required" name="username">
+              <input  type="text" class="form-control"  required="required" name="username">
             </div>
             <div class="form-group">
               <label for="password" class="font-weight-bold">Password</label>
-              <input  v-model="password" type="password" class="form-control" required="required" name="password">
+              <input   type="password" class="form-control" required="required" name="password">
             </div>
             <div class="form-group">
                 <button type="submit" @click="login" class="btn btn-primary btn-block log-btn-class">Log in</button>
@@ -306,10 +306,16 @@ const loginComponent = {
           .then(function (jsonResponse) {
               // display a success message
               console.log(jsonResponse);
+
               self.message=jsonResponse.message;
+              if(self.message == "Login successful") {
+                  self.$router.push("/cars/explore")
+                  localStorage.setItem('token', jsonResponse.token)
+              }
             })    
           .catch(function (error) {
-              console.log(error); 
+              console.log(error);
+
               self.error=error.message;   
           });
         }
@@ -317,11 +323,7 @@ const loginComponent = {
       data: function(){
         return {
             message: "",
-            error: "",
-            loginObj : {
-                username:"",
-                password:""
-            }
+            error: ""
         }
       },
       components : {
@@ -762,7 +764,30 @@ const CardCarsList = {
              }
              ]
       }
-  }
+  },
+    mounted() {
+        this.getAllCars()
+    },
+    methods : {
+        getAllCars() {
+                let self = this;
+    fetch(`/api/cars/`, {
+        method: 'GET',
+        headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
+    })
+    .then(function (response) {
+        return response.json();
+        })
+    .then(function (jsonResponse) {
+        // display a success message
+        console.log(jsonResponse);
+      })
+    .catch(function (error) {
+        console.log(error);
+        self.error=error;
+    });
+        }
+    }
 }
 
 const ExploreComponent = {
@@ -787,10 +812,10 @@ const ExploreComponent = {
                       <button type="submit" class="btn-class mt-lg-4">Search</button>
                   </div>
                   </div>
-              </div>
           </form>
           <CardCarsList></CardCarsList>
-        </div>
+          </div>
+
       </section>
     `,
     created(){

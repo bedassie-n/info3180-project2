@@ -86,48 +86,53 @@ def register():
             app.config['UPLOAD_FOLDER'], filename
         ))
         
-        # create user 
-        user = Users (
-            username = request.form['username'],
-            password = request.form['password'], 
-            name = request.form['name'],
-            email = request.form['email'],
-            location = request.form.get('location', ""),
-            biography = request.form.get('biography', ""),
-            # photo = request.form.get('photo', ""),
-            photo = filename,
-            date_joined =  datetime.datetime.now(datetime.timezone.utc)
-        )
+        # check if user already exists in database
+        if Users.query.filter_by(username = request.form['username']).first() \
+            or Users.query.filter_by(email = request.form['email']).first():
+                 return jsonify({'message': 'Username or email already exists.'}), 409
+        else:
+            # create user 
+            user = Users (
+                username = request.form['username'],
+                password = request.form['password'], 
+                name = request.form['name'],
+                email = request.form['email'],
+                location = request.form.get('location', ""),
+                biography = request.form.get('biography', ""),
+                # photo = request.form.get('photo', ""),
+                photo = filename,
+                date_joined =  datetime.datetime.now(datetime.timezone.utc)
+            )
 
-        #add user to db
-        db.session.add(user)
-        db.session.commit()
+            #add user to db
+            db.session.add(user)
+            db.session.commit()
 
-        #get the user from the db
-        newUser = Users.query.filter_by(username = request.form['username']).first()
+            #get the user from the db
+            newUser = Users.query.filter_by(username = request.form['username']).first()
 
-        #build api response with user data
-        userResult = {
-            'id': newUser.id, 
-            'username': newUser.username,
-            'name': newUser.name,
-            'email': newUser.email,
-            'location': newUser.location,
-            'biography': newUser.biography,
-            'photo': newUser.photo,
-            'date_joined': newUser.date_joined
-        }
-        
-        #send api response
-        # return jsonify({'user': userResult}), 201
-        return jsonify({'id': newUser.id, \
-                        'username': newUser.username,   \
-                        'name': newUser.name,   \
-                        'email': newUser.email, \
-                        'location': newUser.location,   \
-                        'biography': newUser.biography, \
-                        'photo': newUser.photo, \
-                        'date_joined': newUser.date_joined}), 201
+            #build api response with user data
+            userResult = {
+                'id': newUser.id, 
+                'username': newUser.username,
+                'name': newUser.name,
+                'email': newUser.email,
+                'location': newUser.location,
+                'biography': newUser.biography,
+                'photo': newUser.photo,
+                'date_joined': newUser.date_joined
+            }
+            
+            #send api response
+            # return jsonify({'user': userResult}), 201
+            return jsonify({'id': newUser.id, \
+                            'username': newUser.username,   \
+                            'name': newUser.name,   \
+                            'email': newUser.email, \
+                            'location': newUser.location,   \
+                            'biography': newUser.biography, \
+                            'photo': newUser.photo, \
+                            'date_joined': newUser.date_joined}), 201
     else:
     #    abort(400) #bad request http code
         return jsonify({'user': []}), 400
@@ -163,9 +168,10 @@ def login():
 
             #send api response
             return jsonify({'message': 'Login successful', 'token': token}), 200
+        elif user is None or not check_password_hash(user.password, password):
+            return jsonify({'message': 'Login unsuccessful'}), 404
         else:
-            # abort(400) #bad request http code
-            return jsonify({'result': []}), 400
+            return jsonify({'message': 'Server may have encountered an error'}), 500
         
 
 # user_loader callback. This callback is used to reload the user object from
@@ -381,13 +387,16 @@ def getcar(car_id):
 def rmvCarFromFav(car_id):
     if g.current_user:
         user_id = (g.current_user)['sub']
-        favToDel = Favourites.query.filter_by(car_id=car_id).first()
+        # favToDel = Favourites.query.filter_by(car_id=car_id).first()
+        # favToDel = db.session.query(Favourites).filter_by(car_id=car_id, user_id = user_id)
+        favToDel = Favourites.query.filter_by(car_id=car_id, user_id=user_id)
+    
         db.session.delete(favToDel)
         db.session.commit()
 
         return jsonify({"message":"Car Successfully UnFavourited", "car_id":car_id}), 200
-    # else:
-    #    return jsonify({"result": "Access token is missing or invalid"}), 401 
+    else:
+       return jsonify({"result": "Access token is missing or invalid"}), 401 
 
 
 @app.route('/api/cars/<car_id>/favourites', methods= ["POST"])
@@ -398,8 +407,8 @@ def addCarToFav(car_id):
         db.session.add(Favourites(car_id=car_id, user_id=user_id)) 
         db.session.commit()
         return jsonify({"message":"Car Successfully Favourited", "car_id":car_id}), 200
-    # else:
-    #    return jsonify({"result": "Access token is missing or invalid"}), 401 
+    else:
+       return jsonify({"result": "Access token is missing or invalid"}), 401 
 
 
 """              API: PROFILE MANAGEMENT              """
