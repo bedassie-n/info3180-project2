@@ -284,7 +284,7 @@ const loginComponent = {
               console.log(jsonResponse);
 
               self.message=jsonResponse.message;
-              if(self.message = "Login successful") {
+              if(self.message == "Login successful") {
                   self.$router.push("/cars/explore")
               }
             })    
