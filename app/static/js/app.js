@@ -470,49 +470,71 @@ const Register = {
 
 const NewCar = {
   name: 'NewCar',
+  props: ['flashes'],
+  computed:{
+    json_flashes: function(){
+      return JSON.parse(this.flashes)
+    },
+    is_flashes: function(){
+      if(this.flashes){
+        return true
+      }else{
+        return false
+      }
+    },
+    user_id: function(){
+      token = localStorage.getItem("token");
+      var base64Url = token.split('.')[1];
+      var base64 = base64Url.replace('-', '+').replace('_', '/');
+      var res = JSON.parse(atob(base64));
+      console.log(res.sub)
+      return res.sub;
+    }
+  },
   template:`
   <section id="new-car-page">
+      <Flash v-if="is_flashes" v-for="flash in json_flashes" v-bind:message="flash.message" v-bind:category="flash.category"></Flash>
       <div class="row">
         <div class="col-sm"></div>
         <div class="register-form col-lg-7">
           <h3 class="font-weight-bold display-5">
             Add New Car
           </h3>
-          <form class="container" @submit.prevent="addCar" method="POST" enctype="multipart/form-data">
+          <form id="car-form" class="container" @submit.prevent="addCar" method="POST" enctype="multipart/form-data">
               <div class="form-row">
                   <div class="col w-25 form-group">
                       <label for="make">Make</label>
-                      <input class="form-control" id="make" type="text" name="make" placeholder="Tesla">
+                      <input class="form-control" id="make" type="text" name="make" placeholder="Tesla" required>
                   </div>
                   <div class="form-group col w-25">
                       <label for="model">Model</label>
-                      <input class="form-control" id="model" type="text" name="model" placeholder="Model S">
+                      <input class="form-control" id="model" type="text" name="model" placeholder="Model S" required>
                   </div> 
               </div>
               <div class="form-row">
                   <div class="form-group col w-15">
                       <label for="colour">Colour</label>
-                      <input class="form-control" id="colour" name="colour" type="text" placeholder="Red">
+                      <input class="form-control" id="colour" name="colour" type="text" placeholder="Red" required>
                   </div>
                   <div class="form-group col w-25">
                       <label for="year">Year</label>
-                      <input class="form-control" type="number" name="year" id="year" placeholder="2021">
+                      <input class="form-control" type="number" name="year" id="year" placeholder="2021" required>
                   </div>
               </div>
               <div class="form-row">
                   <div class="form-group col w-15">
                       <label for="price">Price</label>
-                      <input class="form-control" id="price" name="price" type="text" placeholder="62700">
+                      <input class="form-control" id="price" name="price" type="text" placeholder="62700" required>
                   </div>
                   <div class="form-group col w-25">
                       <label for="car_type">Car Type</label>
-                      <select id="car_type" class="form-control" name="car_type">
+                      <select id="car_type" class="form-control" name="car_type" required>
                         <option selected>Choose...</option>
                         <option>Sports Sedan</option>
                         <option>Luxury Sedan</option>
                         <option>Convertible</option>
                         <option>Supercar</option>
-                        <option>Roadster</option>
+                        <option selected>Roadster</option>
                         <option>SUV</option>
                         <option>Truck</option>
                         <option>Station Wagon</option>
@@ -524,7 +546,7 @@ const NewCar = {
               <div class="form-row">
                   <div class="form-group col w-25">
                       <label for="transmission">Transmission</label>
-                      <select id="transmission" class="form-control" name="transmission">
+                      <select id="transmission" class="form-control" name="transmission" required>
                         <option selected>Automatic</option>
                         <option>Manual</option>
                         <option>Hybrid</option>
@@ -535,18 +557,19 @@ const NewCar = {
               <div class="form-row">
                   <div class="form-group col w-50">
                       <label for="description">Description</label>
-                      <textarea class="form-control" id="description" name="description" type="text" rows=5></textarea>
+                      <textarea class="form-control" id="description" name="description" type="text" rows=5 required></textarea>
                   </div>
               </div>
               <div class="form-row">
                   <div class="form-group col w-50">
                     <div class="custom-file">
-                      <input type="file" class="custom-file-input font-weight-bold" name="photo" id="photo">
+                      <input type="file" class="custom-file-input font-weight-bold" name="photo" id="photo" required>
                       <label class="custom-file-label" for="photo">Upload Photo</label>
                     </div>
                   </div>
                   <div class="col w-50"></div>
               </div>
+              <input id="user_id" name="user_id" :value="this.user_id" hidden/>
               <div class="form-row">
                   <div class="form-group">
                       <button type="submit" class="btn">Save</button>
@@ -563,32 +586,8 @@ const NewCar = {
   },
   methods:{
      addCar(){
-      let car_form = document.querySelector("#new-car-form .register-form form")
-      let form_data = new FormData(car_form);
-
-      let description  = form_data.get("description");
-      let year  = form_data.get("year");
-      let make  = form_data.get("make");
-      let model  = form_data.get("model");
-      let colour  = form_data.get("colour");
-      let transmission  = form_data.get("transmission");
-      let car_type  = form_data.get("car_type");
-      let price  = form_data.get("price");
-      let photo  = form_data.get("photo");
-      let user_id  = form_data.get("user_id");
-
-      let sub = {}
-      sub.description = description;
-      sub.year = year;
-      sub.make = make;
-      sub.model = model;
-      sub.colour = colour;
-      sub.transmission = transmission;
-      sub.car_type = car_type;
-      sub.price = price;
-      sub.photo = photo;
-      sub.user_id = user_id;
-      
+      let car_form = document.querySelector("#car-form")
+      let form_data = new FormData(car_form);      
       let self = this;
       fetch("/api/cars", {
           method: 'POST',
@@ -598,23 +597,50 @@ const NewCar = {
             "Content-Type":"application/json",
             'Authorization': "Bearer " + localStorage.getItem("token")
           },
-          body: JSON.stringify(sub)
+          body: form_data
           // headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
           // headers: {'Authorization': "Bearer " + this.$cookies.get("session")},
           // credentials: 'same-origin'
       })    
-          .then(function (response) {        
-              return response.json();
-              })    
-          .then(function (jsonResponse) {
-              // display a success message
-              console.log(jsonResponse);
-              self.message=jsonResponse.message;
-           })    
-          .catch(function (error) {
-              console.log(error); 
-              self.error=error.message;   
+      .then(function (response) {        
+        if(response.status == 409 || response.status == 500){
+          response.json().then((data) => {
+            router.push({ name: 'NewCar', params: { flashes: JSON.stringify(
+              [{
+                  message: data.message,
+                  category: "danger"
+                }]
+            )}})
           });
+        } else if (response.status == 201){
+          response.json().then((data) => {
+            router.push({ name: 'Explore', params: { flashes: JSON.stringify(
+              [{
+                  message: "Successfully added your " + data.make + " " + data.model +".",
+                  category: "success"
+                }]
+            ) }})
+          });
+        } else if (response.status == 400){
+          response.json().then((data) => {
+            router.push({ name: 'NewCar', params: { flashes: JSON.stringify(
+              [{
+                  message: "Wrong request format, contact Administrator.",
+                  category: "danger"
+                }]
+            ) }})
+          });
+        } else if (response.status == 401){
+          response.json().then((data) => {
+            router.push({ name: 'NewCar', params: { flashes: JSON.stringify(
+              [{
+                  message: "Please login to add a car.",
+                  category: "danger"
+                }]
+            ) }})
+          });
+        }
+        })    
      }
   },
   data: function(){
@@ -622,6 +648,9 @@ const NewCar = {
           message: "",
           error: "",
       }
+  },
+  components : {
+    Flash
   }
 }
 
@@ -845,37 +874,64 @@ const CardCarsList = {
 
 const ExploreComponent = {
     name:'explore-component',
+    props: ['flashes'],
+    computed:{
+      json_flashes: function(){
+        return JSON.parse(this.flashes)
+      },
+      is_flashes: function(){
+        if(this.flashes){
+          return true
+        }else{
+          return false
+        }
+      },
+      user_id: function(){
+        token = localStorage.getItem("token");
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace('-', '+').replace('_', '/');
+        var res = JSON.parse(atob(base64));
+        console.log(res.sub)
+        return res.sub;
+      }
+    },
     template:`
       <section id="explore-page" >
-        <div class="explore-div">
-          <h3 class="font-weight-bold display-5">
-              Explore
-          </h3>
-          <form class="container" @submit.prevent="addCar" method="POST" enctype="multipart/form-data">
-              <div class="form-row  container">
-                  <div class="col-sm form-group">
-                      <label for="make">Make</label>
-                      <input class="form-control" id="make" type="text" name="make" placeholder="Tesla">
-                  </div>
-                  <div class="form-group col-sm">
-                      <label for="model">Model</label>
-                      <input class="form-control" id="model" type="text" name="model" placeholder="Model S">
-                  </div> 
-                  <div class="form-group col-sm ">
-                      <button type="submit" class="btn-class mt-lg-4">Search</button>
-                  </div>
-                  </div>
-          </form>
-          <CardCarsList></CardCarsList>
-          </div>
-
+        <Flash v-if="is_flashes" v-for="flash in json_flashes" v-bind:message="flash.message" v-bind:category="flash.category"></Flash>
+        <div class="container">
+          <div class="row">
+            <div class="col-sm"></div>
+            <div class="explore-div col-lg-7">
+              <h3 class="font-weight-bold display-5">
+                  Explore
+              </h3>
+              <form @submit.prevent="addCar" method="POST" enctype="multipart/form-data">
+                  <div class="form-row  container">
+                      <div class="col-sm form-group">
+                          <label for="make">Make</label>
+                          <input class="form-control" id="make" type="text" name="make" placeholder="Tesla">
+                      </div>
+                      <div class="form-group col-sm">
+                          <label for="model">Model</label>
+                          <input class="form-control" id="model" type="text" name="model" placeholder="Model S">
+                      </div> 
+                      <div class="form-group col-sm ">
+                          <button type="submit" class="btn-class mt-lg-4">Search</button>
+                      </div>
+                      </div>
+              </form>
+              <div class="col-sm"></div>
+              <CardCarsList></CardCarsList>
+            </div>
+        </div>
       </section>
     `,
     created(){
     document.body.classList.add("grey-background");
   },
     components : {
-        CardCarsList
+        CardCarsList,
+        Flash
     }
 
 
@@ -892,7 +948,7 @@ const UserProfile = {
         </div>
         <div class="col-md-6 user-info pr-5">
             <h1 class="font-weight-bold">{{user.name}}</h1>
-            <h4 class="text-secondary font-weight-bold">{{user.username}}</h4><br>
+            <h4 class="text-secondary font-weight-bold">@{{user.username}}</h4><br>
             <section class="text-secondary">
                 <article>
                   {{user.biography}}
@@ -954,7 +1010,7 @@ const UserProfile = {
   },
   mounted(){
     let self = this;
-    fetch(`/api/user/${this.$route.params.user_id}`, {
+    fetch(`/api/users/${this.user_id}`, {
         method: 'GET',
         headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
     })    
@@ -972,6 +1028,16 @@ const UserProfile = {
         self.error=error;  
         self.isUser = false
     });
+  },
+  computed :{
+    user_id: function(){
+      token = localStorage.getItem("token");
+      var base64Url = token.split('.')[1];
+      var base64 = base64Url.replace('-', '+').replace('_', '/');
+      var res = JSON.parse(atob(base64));
+      console.log(res.sub)
+      return res.sub;
+    }
   },
   data: function(){
       return {
