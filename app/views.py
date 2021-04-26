@@ -208,7 +208,7 @@ def search():
         cars = Cars.query.filter_by(model=model).all()
      
     else:    #neither
-        return jsonify({'result': []}), 404 #Not Found
+        return jsonify({'result': 'Make and model missing'}), 404 #Not Found
 
     #if cars found matching criteria
     if cars is not None:
@@ -235,7 +235,7 @@ def search():
         #send api response
         return jsonify({'result': carResults}), 200
     else:
-        return jsonify({'result': []}), 404 #Not Found
+        return jsonify({'result': 'Car not found'}), 404 #Not Found
 
 
 
@@ -298,57 +298,80 @@ def addCars():
     #     return jsonify({'result':[]}), 400
 
     if request.json:
-        car = Cars(
-            description = request.json['description'],
-            year = request.json['year'],
-            make = request.json['make'],
-            model = request.json['model'],
-            colour = request.json['colour'],
-            transmission = request.json['transmission'],
-            car_type = request.json['car_type'],
-            price = request.json['price'],
-            photo = request.json.get('photo', ""),
-            user_id = request.json['user_id']
-        )
+        # check if car already exists in database 
+        # for a user to add a car, it must have at least one attribute that differs from all other cars
+        if Cars.query.filter_by(description = request.json['description']).first() \
+            or Cars.query.filter_by(year = request.json['year']).first() \
+            or Cars.query.filter_by(make = request.json['make']).first() \
+            or Cars.query.filter_by(model = request.json['model']).first() \
+            or Cars.query.filter_by(colour = request.json['colour']).first() \
+            or Cars.query.filter_by(transmission = request.json['transmission']).first() \
+            or Cars.query.filter_by(car_type = request.json['car_type']).first() \
+            or Cars.query.filter_by(price = request.json['price']).first() \
+            or Cars.query.filter_by(photo = request.json['photo']).first():
+            # or Cars.query.filter_by(user_id = request.json['user_id']).first() :
+                return jsonify({'message': 'Car already exists.'}), 409
+        else:
+            # get photo filename
+            rawCarPhoto = request.json['photo']
+            # rawCarPhoto = request.files['photo']
+            carFilename = secure_filename(rawCarPhoto.filename)
+            rawCarPhoto.save(os.path.join(
+                app.config['UPLOAD_FOLDER'], carFilename
+            ))
+        
+            car = Cars(
+                description = request.json['description'],
+                year = request.json['year'],
+                make = request.json['make'],
+                model = request.json['model'],
+                colour = request.json['colour'],
+                transmission = request.json['transmission'],
+                car_type = request.json['car_type'],
+                price = request.json['price'],
+                # photo = request.json.get('photo', ""),
+                photo = request.json.get('photo', ""),
+                user_id = request.json['user_id']
+            )
 
-        #add car to db
-        db.session.add(car)
-        db.session.commit()
+            #add car to db
+            db.session.add(car)
+            db.session.commit()
 
-        #get the car from the db (using description, user_id and photo to identify)
-        newCar = Cars.query.filter_by(description = request.json['description']) \
-                            .filter_by(user_id = request.json['user_id']) \
-                            .filter_by(photo = request.json['photo']) \
-                            .first()
+            #get the car from the db (using description, user_id and photo to identify)
+            newCar = Cars.query.filter_by(description = request.json['description']) \
+                                .filter_by(user_id = request.json['user_id']) \
+                                .filter_by(photo = request.json['photo']) \
+                                .first()
 
-        #build api response with car data
-        # carResult = {
-        #     'id': newCar.id, 
-        #     'description': newCar.description,
-        #     'year': newCar.year,
-        #     'make': newCar.make,
-        #     'model': newCar.model,
-        #     'colour': newCar.colour,
-        #     'transmission': newCar.transmission,
-        #     'car_type': newCar.car_type,
-        #     'price': newCar.price,
-        #     'photo': newCar.photo,
-        #     'user_id': newCar.user_id
-        # }
+            #build api response with car data
+            # carResult = {
+            #     'id': newCar.id, 
+            #     'description': newCar.description,
+            #     'year': newCar.year,
+            #     'make': newCar.make,
+            #     'model': newCar.model,
+            #     'colour': newCar.colour,
+            #     'transmission': newCar.transmission,
+            #     'car_type': newCar.car_type,
+            #     'price': newCar.price,
+            #     'photo': newCar.photo,
+            #     'user_id': newCar.user_id
+            # }
 
-        #send api response
-        # return jsonify({'car': carResult}), 201
-        return jsonify({'id': newCar.id, 
-                        'description': newCar.description,  \
-                        'year': newCar.year,    \
-                        'make': newCar.make,    \
-                        'model': newCar.model,  \
-                        'colour': newCar.colour,    \
-                        'transmission': newCar.transmission,    \
-                        'car_type': newCar.car_type,    \
-                        'price': newCar.price,  \
-                        'photo': newCar.photo,  \
-                        'user_id': newCar.user_id}), 201
+            #send api response
+            # return jsonify({'car': carResult}), 201
+            return jsonify({'id': newCar.id, 
+                            'description': newCar.description,  \
+                            'year': newCar.year,    \
+                            'make': newCar.make,    \
+                            'model': newCar.model,  \
+                            'colour': newCar.colour,    \
+                            'transmission': newCar.transmission,    \
+                            'car_type': newCar.car_type,    \
+                            'price': newCar.price,  \
+                            'photo': newCar.photo,  \
+                            'user_id': newCar.user_id}), 201
     else:
     #    abort(400) #bad request http code
         return jsonify({'car': []}), 400
