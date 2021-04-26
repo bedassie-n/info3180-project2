@@ -377,8 +377,7 @@ const Register = {
       fetch("/api/register", {
           method: 'POST',
           body: form_data
-          // headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
-      })    
+          })    
           .then(function (response) {        
               return response.json();
               })    
@@ -489,7 +488,7 @@ const NewCar = {
       fetch("/api/cars", {
           method: 'POST',
           body: form_data,
-          // headers: {'X-CSRFToken': token    },
+          headers: {'Authorization': "Bearer" + localStorage.getItem("token")},
           credentials: 'same-origin'
       })    
           .then(function (response) {        
@@ -601,6 +600,9 @@ const ViewCar = {
     let self = this;
     fetch(`/api/cars/${this.$route.params.id}`, {
         method: 'GET',
+        headers:{
+          "Authorization": "Bearer" + localStorage.getItem("token")
+        },
         credentials: 'same-origin'
     })    
     .then(function (response) {        
@@ -624,7 +626,7 @@ const ViewCar = {
         fetch(`api/cars/${self.car.id}/favourite`,{
           method: 'POST',
           body: JSON.stringify({user_id:0, car_id:self.car.id}), // for testing
-          // headers: {'X-CSRFToken': token    },
+          headers: {'Authorization': "Bearer" + localStorage.getItem("token")},
           credentials: 'same-origin'
         })
         .then(function (response) {
@@ -819,7 +821,7 @@ const UserProfile = {
     let self = this;
     fetch(`/api/user/${this.$route.params.user_id}`, {
         method: 'GET',
-        credentials: 'same-origin'
+        headers: {'Authorization': "Bearer" + localStorage.getItem("token")},
     })    
     .then(function (response) {        
         return response.json();
@@ -827,7 +829,7 @@ const UserProfile = {
     .then(function (jsonResponse) {
         // display a success message
         console.log(jsonResponse);
-        self.UserProfile=jsonResponse;
+        self.user=jsonResponse;
         self.isUser = true;
       })    
     .catch(function (error) {
