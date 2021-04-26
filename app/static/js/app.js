@@ -286,6 +286,7 @@ const loginComponent = {
               self.message=jsonResponse.message;
               if(self.message == "Login successful") {
                   self.$router.push("/cars/explore")
+                  localStorage.setItem('token', jsonResponse.token)
               }
             })    
           .catch(function (error) {
@@ -715,7 +716,7 @@ const CardCarsList = {
                 let self = this;
     fetch(`/api/cars/`, {
         method: 'GET',
-        credentials: 'same-origin'
+        headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
     })
     .then(function (response) {
         return response.json();
