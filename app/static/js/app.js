@@ -488,7 +488,7 @@ const NewCar = {
       fetch("/api/cars", {
           method: 'POST',
           body: form_data,
-          headers: {'Authorization': "Bearer" + localStorage.getItem("token")},
+          headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
           credentials: 'same-origin'
       })    
           .then(function (response) {        
@@ -601,7 +601,7 @@ const ViewCar = {
     fetch(`/api/cars/${this.$route.params.id}`, {
         method: 'GET',
         headers:{
-          "Authorization": "Bearer" + localStorage.getItem("token")
+          "Authorization": "Bearer " + localStorage.getItem("token")
         },
         credentials: 'same-origin'
     })    
@@ -626,7 +626,7 @@ const ViewCar = {
         fetch(`api/cars/${self.car.id}/favourite`,{
           method: 'POST',
           body: JSON.stringify({user_id:0, car_id:self.car.id}), // for testing
-          headers: {'Authorization': "Bearer" + localStorage.getItem("token")},
+          headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
           credentials: 'same-origin'
         })
         .then(function (response) {
@@ -821,7 +821,7 @@ const UserProfile = {
     let self = this;
     fetch(`/api/user/${this.$route.params.user_id}`, {
         method: 'GET',
-        headers: {'Authorization': "Bearer" + localStorage.getItem("token")},
+        headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
     })    
     .then(function (response) {        
         return response.json();
