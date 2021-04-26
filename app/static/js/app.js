@@ -426,7 +426,7 @@ const Register = {
                 response.json().then((data) => {
                   router.push({ name: 'Register', params: { flashes: JSON.stringify(
                     [{
-                        messsage: data.result,
+                        message: data.message,
                         category: "danger"
                       }]
                   )}})
@@ -497,7 +497,16 @@ const NewCar = {
                     <label for="car_type">Car Type</label>
                     <select id="car_type" class="form-control" name="car_type">
                       <option selected>Choose...</option>
-                      <option>...</option>
+                      <option>Sports Sedan</option>
+                      <option>Luxury Sedan</option>
+                      <option>Convertible</option>
+                      <option>Supercar</option>
+                      <option>Roadster</option>
+                      <option>SUV</option>
+                      <option>Truck</option>
+                      <option>Station Wagon</option>
+                      <option>Coupe</option>
+                      <option>Minivan</option>
                     </select>
                 </div>
             </div>
