@@ -776,7 +776,7 @@ const CardCarsList = {
     template:`<div class="container">
 <div class="row">
             <div v-for=" card in cars" class="card col-sm vehicle-list-card box-shadow-down" style="width: 18rem;">
-              <img class="img-fluid card-img-top" :src="card.picture" >
+              <img class="img-fluid card-img-top" :src="card.photo" >
               <div class="card-body">
                 <h5 class="card-title">{{card.year + " " + card.make}} <span><button class="price-chip "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tag" viewBox="0 0 16 16">
   <path d="M6 4.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1 0a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z"/>
@@ -790,32 +790,7 @@ const CardCarsList = {
 </div>`,
      data: function(){
       return {
-         cars:[
-             {
-                 id:1,   
-                 year:2020,
-                 make:"Lamborghini",
-                 model:"Huracan",
-                  price:"555,222",
-                 picture:"../static/images/default-car.jpg"
-             }
-             ,{
-                 id:2,
-                 year:2020,
-                 make:"Bugatti",
-                 model:"Chiron",
-                  price:"555,222",
-                picture:"../static/images/car.jpg"
-             }
-             ,{
-                 id:3,
-                 year:2018,
-                 make:"Tesla",
-                 model:"Model S",
-                 price:"555,222",
-                 picture:"../static/images/default-car.jpg"
-             }
-             ]
+         cars:[]
       }
   },
     mounted() {
@@ -832,8 +807,9 @@ const CardCarsList = {
         return response.json();
         })
     .then(function (jsonResponse) {
-        // display a success message
-        console.log(jsonResponse);
+        // stores cars data
+        console.log(jsonResponse.result);
+        self.cars = jsonResponse.result
       })
     .catch(function (error) {
         console.log(error);
