@@ -382,13 +382,16 @@ def getcar(car_id):
 def rmvCarFromFav(car_id):
     if g.current_user:
         user_id = (g.current_user)['sub']
-        favToDel = Favourites.query.filter_by(car_id=car_id).first()
+        # favToDel = Favourites.query.filter_by(car_id=car_id).first()
+        # favToDel = db.session.query(Favourites).filter_by(car_id=car_id, user_id = user_id)
+        favToDel = Favourites.query.filter_by(car_id=car_id, user_id=user_id)
+    
         db.session.delete(favToDel)
         db.session.commit()
 
         return jsonify({"message":"Car Successfully UnFavourited", "car_id":car_id}), 200
-    # else:
-    #    return jsonify({"result": "Access token is missing or invalid"}), 401 
+    else:
+       return jsonify({"result": "Access token is missing or invalid"}), 401 
 
 
 @app.route('/api/cars/<car_id>/favourites', methods= ["POST"])
@@ -399,8 +402,8 @@ def addCarToFav(car_id):
         db.session.add(Favourites(car_id=car_id, user_id=user_id)) 
         db.session.commit()
         return jsonify({"message":"Car Successfully Favourited", "car_id":car_id}), 200
-    # else:
-    #    return jsonify({"result": "Access token is missing or invalid"}), 401 
+    else:
+       return jsonify({"result": "Access token is missing or invalid"}), 401 
 
 
 """              API: PROFILE MANAGEMENT              """
