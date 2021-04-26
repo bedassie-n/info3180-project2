@@ -421,7 +421,6 @@ def getUser(user_id):
         for u in user:
             uid = u.id
             username = u.username
-            password = u.password
             name = u.name
             email = u.email
             location = u.location
@@ -431,7 +430,7 @@ def getUser(user_id):
 
         # result = {'id': uid, "username": username, "password": password, "name": name, "email": email, "location": location, "biography": biography, "photo": photo, "date_joined": date_joined}
         # return jsonify({'result':result}), 200
-        return jsonify({'id': uid, "username": username, "password": password, "name": name, "email": email, "location": location, "biography": biography, "photo": photo, "date_joined": date_joined}), 200
+        return jsonify({'id': uid, "username": username, "name": name, "email": email, "location": location, "biography": biography, "photo": photo, "date_joined": date_joined}), 200
     elif len(user) == 0: 
         return jsonify({"result": user}), 404
     # else:
