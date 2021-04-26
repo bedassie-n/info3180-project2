@@ -205,6 +205,16 @@ app.component('app-header', {
     }
 });
 
+const Flash = {
+  name: 'Flash',
+  props:['message','category'],
+  template: `
+    <div :class="'alert alert-'+ category">
+      {{ message }}
+    </div>
+  `
+}
+
 const Home = {
   name: 'Home',
   template: `
@@ -235,7 +245,21 @@ const Home = {
 
 const loginComponent = {
     name: 'login',
+    props: ['flashes'],
+    computed:{
+      json_flashes: function(){
+        return JSON.parse(this.flashes)
+      },
+      is_flashes: function(){
+        if(this.flashes){
+          return true
+        }else{
+          return false
+        }
+      }
+    },
     template: `
+      <Flash v-if="is_flashes" v-for="flash in json_flashes" v-bind:message="flash.message" v-bind:category="flash.category"></Flash>
       <div class="login-form">
         <h2 class="text-center">Login to your account</h2>       
         <form v-on:submit.prevent method="post">
@@ -299,13 +323,30 @@ const loginComponent = {
                 password:""
             }
         }
+      },
+      components : {
+        Flash
       }
 }
 
 const Register = {
   name: 'Register',
+  props: ['flashes'],
+  computed:{
+    json_flashes: function(){
+      return JSON.parse(this.flashes)
+    },
+    is_flashes: function(){
+      if(this.flashes){
+        return true
+      }else{
+        return false
+      }
+    }
+  },
   template:`
   <section id="register-page">
+    <Flash v-if="is_flashes" v-for="flash in json_flashes" v-bind:message="flash.message" v-bind:category="flash.category"></Flash>
     <div class="row">
       <div class="col-sm"></div>
       <div class="register-form col-lg-7">
@@ -316,40 +357,40 @@ const Register = {
             <div class="form-row">
                 <div class="col w-25 form-group">
                     <label for="username">Username</label>
-                    <input class="form-control" id="username" type="text" name="username">
+                    <input class="form-control" id="username" type="text" name="username" required>
                 </div>
                 <div class="form-group col w-25">
                     <label for="password">Password</label>
-                    <input class="form-control" id="password" type="password" name="password">
+                    <input class="form-control" id="password" type="password" name="password" required>
                 </div> 
             </div>
             <div class="form-row">
                 <div class="form-group col w-15">
                     <label for="name">Fullname</label>
-                    <input class="form-control" id="name" name="name" type="text">
+                    <input class="form-control" id="name" name="name" type="text" required>
                 </div>
                 <div class="form-group col w-25">
                     <label for="email">Email</label>
-                    <input class="form-control" type="email" name="email" id="email">
+                    <input class="form-control" type="email" name="email" id="email" required>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col w-25">
                     <label for="location">Location</label>
-                    <input class="form-control" id="location" name="location" type="text">
+                    <input class="form-control" id="location" name="location" type="text" required>
                 </div>
                 <div class="col w-25"></div>
             </div>
             <div class="form-row">
                 <div class="form-group col w-50">
                     <label for="biography">Biography</label>
-                    <textarea class="form-control" id="biography" name="biography" type="text" rows=5></textarea>
+                    <textarea class="form-control" id="biography" name="biography" type="text" rows=5 required></textarea>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col w-50">
                   <div class="custom-file">
-                    <input type="file" class="custom-file-input font-weight-bold" name="photo" id="photo">
+                    <input type="file" class="custom-file-input font-weight-bold" name="photo" id="photo" required>
                     <label class="custom-file-label" for="photo">Upload Photo</label>
                   </div>
                 </div>
@@ -379,12 +420,25 @@ const Register = {
           body: form_data
           })    
           .then(function (response) {        
-              return response.json();
-              })    
-          .then(function (jsonResponse) {
-              // display a success message
-              console.log(jsonResponse);
-              self.message=jsonResponse.message;
+              if(response.status == 409 || response.status == 500 || response.status == 400){
+                response.json().then((data) => {
+                  router.push({ name: 'Register', params: { flashes: JSON.stringify(
+                    [{
+                        messsage: data.result,
+                        category: "danger"
+                      }]
+                  )}})
+                });
+              } else if (response.status == 201){
+                response.json().then((data) => {
+                  router.push({ name: 'Login', params: { flashes: JSON.stringify(
+                    [{
+                        message: "Successfully Registered: " + data.name,
+                        category: "success"
+                      }]
+                  ) }})
+                });
+              }
            })    
           .catch(function (error) {
               console.log(error); 
@@ -395,8 +449,11 @@ const Register = {
   data: function(){
       return {
           message: "",
-          error: "",
+          error: ""
       }
+  },
+  components : {
+    Flash
   }
 }
 
@@ -866,12 +923,12 @@ const NotFound = {
 const routes = [
   { path: "/", component: Home },
   // Put other routes here
-  {path:"/login",component: loginComponent, name:"Login"},
-  {path:"/register", component: Register, name:"Register"},
-  {path:"/cars/new", component: NewCar, name:"NewCar"},
-  {path:"/cars/:id", component: ViewCar, name:"ViewCar"},
-  {path:"/cars/explore", component: ExploreComponent, name:"Explore"},
-  {path:"/user/:user_id", component: UserProfile, name:"UserProfile"},
+  {path:"/login",component: loginComponent, name:"Login", props: true},
+  {path:"/register", component: Register, name:"Register", props:true},
+  {path:"/cars/new", component: NewCar, name:"NewCar", props: true},
+  {path:"/cars/:id", component: ViewCar, name:"ViewCar", props: true},
+  {path:"/cars/explore", component: ExploreComponent, name:"Explore", props: true},
+  {path:"/user/:user_id", component: UserProfile, name:"UserProfile", props: true},
 
   // This is a catch all route in case none of the above matches
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
