@@ -163,9 +163,10 @@ def login():
 
             #send api response
             return jsonify({'message': 'Login successful', 'token': token}), 200
+        elif user is None or not check_password_hash(user.password, password):
+            return jsonify({'message': 'Login unsuccessful'}), 404
         else:
-            # abort(400) #bad request http code
-            return jsonify({'result': []}), 400
+            return jsonify({'message': 'Server may have encountered an error'}), 500
         
 
 # user_loader callback. This callback is used to reload the user object from
