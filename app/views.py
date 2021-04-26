@@ -86,48 +86,53 @@ def register():
             app.config['UPLOAD_FOLDER'], filename
         ))
         
-        # create user 
-        user = Users (
-            username = request.form['username'],
-            password = request.form['password'], 
-            name = request.form['name'],
-            email = request.form['email'],
-            location = request.form.get('location', ""),
-            biography = request.form.get('biography', ""),
-            # photo = request.form.get('photo', ""),
-            photo = filename,
-            date_joined =  datetime.datetime.now(datetime.timezone.utc)
-        )
+        # check if user already exists in database
+        if Users.query.filter_by(username = request.form['username']).first() \
+            or Users.query.filter_by(email = request.form['email']).first():
+                 return jsonify({'message': 'Username or email already exists.'}), 409
+        else:
+            # create user 
+            user = Users (
+                username = request.form['username'],
+                password = request.form['password'], 
+                name = request.form['name'],
+                email = request.form['email'],
+                location = request.form.get('location', ""),
+                biography = request.form.get('biography', ""),
+                # photo = request.form.get('photo', ""),
+                photo = filename,
+                date_joined =  datetime.datetime.now(datetime.timezone.utc)
+            )
 
-        #add user to db
-        db.session.add(user)
-        db.session.commit()
+            #add user to db
+            db.session.add(user)
+            db.session.commit()
 
-        #get the user from the db
-        newUser = Users.query.filter_by(username = request.form['username']).first()
+            #get the user from the db
+            newUser = Users.query.filter_by(username = request.form['username']).first()
 
-        #build api response with user data
-        userResult = {
-            'id': newUser.id, 
-            'username': newUser.username,
-            'name': newUser.name,
-            'email': newUser.email,
-            'location': newUser.location,
-            'biography': newUser.biography,
-            'photo': newUser.photo,
-            'date_joined': newUser.date_joined
-        }
-        
-        #send api response
-        # return jsonify({'user': userResult}), 201
-        return jsonify({'id': newUser.id, \
-                        'username': newUser.username,   \
-                        'name': newUser.name,   \
-                        'email': newUser.email, \
-                        'location': newUser.location,   \
-                        'biography': newUser.biography, \
-                        'photo': newUser.photo, \
-                        'date_joined': newUser.date_joined}), 201
+            #build api response with user data
+            userResult = {
+                'id': newUser.id, 
+                'username': newUser.username,
+                'name': newUser.name,
+                'email': newUser.email,
+                'location': newUser.location,
+                'biography': newUser.biography,
+                'photo': newUser.photo,
+                'date_joined': newUser.date_joined
+            }
+            
+            #send api response
+            # return jsonify({'user': userResult}), 201
+            return jsonify({'id': newUser.id, \
+                            'username': newUser.username,   \
+                            'name': newUser.name,   \
+                            'email': newUser.email, \
+                            'location': newUser.location,   \
+                            'biography': newUser.biography, \
+                            'photo': newUser.photo, \
+                            'date_joined': newUser.date_joined}), 201
     else:
     #    abort(400) #bad request http code
         return jsonify({'user': []}), 400
