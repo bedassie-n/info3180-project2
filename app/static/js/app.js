@@ -262,7 +262,6 @@ const loginComponent = {
         fetch("/api/auth/login", {
             method: 'POST',
             body: form_data,
-            headers: {'Authorization': "Bearer" + localStorage.getItem("token")}
         })    
           .then(function (response) {        
               return response.json();
