@@ -11,7 +11,7 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     PROFILE_UPLOAD_FOLDER = os.environ.get('PROFILE_UPLOAD_FOLDER') or './profileUploads'
-    CAR_UPLOAD_FOLDER = os.environ.get('CAR_UPLOAD_FOLDER') or './carUploads/'
+    CAR_UPLOAD_FOLDER = os.environ.get('CAR_UPLOAD_FOLDER') or './carUploads'
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 class DevelopmentConfig(Config):

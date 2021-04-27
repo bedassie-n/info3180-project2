@@ -248,6 +248,7 @@ def search():
 def getAllCars():
     if request.method == 'GET':
         cars = db.session.query(Cars).all()
+        print(cars)
         result = []
         if len(cars) != 0:
             for c in cars:
@@ -299,7 +300,7 @@ def addCars():
     # else:
     #     return jsonify({'result':[]}), 400
 
-    if request.json:
+    if request.form:
         # get photo filename
         rawCarPhoto = request.files['photo']
         carFilename = secure_filename(rawCarPhoto.filename)
@@ -313,7 +314,7 @@ def addCars():
         # )
 
         # get photo path
-        carPhotoPath = "../../../carUploads/" + filename
+        carPhotoPath = "../../../carUploads/" + carFilename
 
         # check if car already exists in database 
         # for a user to add a car, it must have at least one attribute that differs from all other cars
@@ -435,13 +436,15 @@ def rmvCarFromFav(car_id):
 @requires_auth
 def addCarToFav(car_id):
     if g.current_user:
-        user_id = (g.current_user)['sub']
-        db.session.add(Favourites(car_id=car_id, user_id=user_id)) 
-        db.session.commit()
-        return jsonify({"message":"Car Successfully Favourited", "car_id":car_id}), 200
+        if Favourites.query.filter_by(user_id = g.current_user[sub], car_id = car_id):
+            return jsonify({"message": "Conflict! Car cannot be favourited twice"}), 409
+        else: 
+            user_id = (g.current_user)['sub']
+            db.session.add(Favourites(car_id=car_id, user_id=user_id)) 
+            db.session.commit()
+            return jsonify({"message":"Car Successfully Favourited", "car_id":car_id}), 200
     else:
-       return jsonify({"result": "Access token is missing or invalid"}), 401 
-
+       return jsonify({"result": "Access token is missing or invalid"}), 401
 
 """              API: PROFILE MANAGEMENT              """
 
