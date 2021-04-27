@@ -1045,15 +1045,15 @@ const ExploreComponent = {
                   <div class="form-row  container">
                       <div class="col-sm form-group">
                           <label for="make">Make</label>
-                          <input class="form-control" id="make" type="text" name="make" placeholder="Tesla">
-                      </div>
+                          <input v-model="make" class="form-control" id="make" type="text" name="make" placeholder="Tesla">
+                      </div> 
                       <div class="form-group col-sm">
                           <label for="model">Model</label>
-                          <input class="form-control" id="model" type="text" name="model" placeholder="Model S">
+                          <input v-model="model" class="form-control" id="model" type="text" name="model" placeholder="Model S">
                       </div> 
                       <div class="form-group col-sm ">
                           <div>&nbsp;</div>
-                          <button type="submit" class="btn-class mt-lg-4">Search</button>
+                          <button @click="getCarsBySearch" type="submit" class="btn-class mt-lg-4">Search</button>
                       </div>
                       </div>
               </form>
@@ -1066,7 +1066,12 @@ const ExploreComponent = {
     `,
     created(){
     document.body.classList.add("grey-background");
-    let self = this;
+    this.getAllCars()
+
+  },
+    methods : {
+      getAllCars(){
+          let self = this;
     fetch(`/api/cars`, {
     method: 'GET',
     headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
@@ -1087,14 +1092,40 @@ const ExploreComponent = {
         });
       }
     })
-  },
+      },
+        getCarsBySearch() {
+           let self = this;
+           fetch(`/api/search?` + new URLSearchParams({make:self.make, model:self.model}), {
+    method: 'GET',
+    headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
+    })
+    .then(function (response) {
+      if(response.status == 404 || response.status == 500){
+        response.json().then((data) => {
+          router.push({ name: 'Explore', params: { flashes: JSON.stringify(
+            [{
+                message: "No Cars Found.",
+                category: "warning"
+              }]
+          )}})
+        });
+      } else if (response.status == 200){
+        response.json().then((data) => {
+          self.cars = data.result
+        });
+      }
+    })
+        }
+    },
   components : {
       CardCarsList,
       Flash
   },
   data: function(){
     return {
-      cars:[]
+      cars:[],
+        make:"",
+        model:""
     }
   }
 }
