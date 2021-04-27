@@ -721,7 +721,7 @@ const ViewCar = {
               <button class="" type="button">Email Owner</button>
               <div></div>
               <span v-if="favourited" @click="removeFavourite" class="heart d-flex flex-row-reverse favourited">
-                <svg id="heart favourited-svg" viewBox="0 -28 512.001 512" xmlns="http://www.w3.org/2000/svg"><g>
+                <svg id="heart" class="favourited-svg" viewBox="0 -28 512.001 512" xmlns="http://www.w3.org/2000/svg"><g>
                 <path d="M475.366,71.949c-24.175-23.606-57.575-35.404-100.215-35.404c-11.8,0-23.843,2.046-36.117,6.136
                   c-12.279,4.093-23.702,9.615-34.256,16.562c-10.568,6.945-19.65,13.467-27.269,19.556c-7.61,6.091-14.845,12.564-21.696,19.414
                   c-6.854-6.85-14.087-13.323-21.698-19.414c-7.616-6.089-16.702-12.607-27.268-19.556c-10.564-6.95-21.985-12.468-34.261-16.562
@@ -851,12 +851,7 @@ const ViewCar = {
     .then(function (response) {        
       if(response.status == 404 || response.status == 500){
         response.json().then((data) => {
-          router.push({ name: 'Explore', params: { flashes: JSON.stringify(
-            [{
-                message: data.message,
-                category: "danger"
-              }]
-          )}})
+          console.log(data.result)
         });
       } else if (response.status == 200){
         response.json().then((data) => {
@@ -892,12 +887,7 @@ const ViewCar = {
     .then(function (response) {        
       if(response.status == 404 || response.status == 500){
         response.json().then((data) => {
-          router.push({ name: 'Explore', params: { flashes: JSON.stringify(
-            [{
-                message: data.message,
-                category: "danger"
-              }]
-          )}})
+          console.log(data.result)
         });
       } else if (response.status == 200){
         response.json().then((data) => {
