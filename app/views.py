@@ -421,8 +421,8 @@ def rmvCarFromFav(car_id):
     if g.current_user:
         user_id = (g.current_user)['sub']
         # favToDel = Favourites.query.filter_by(car_id=car_id).first()
-        # favToDel = db.session.query(Favourites).filter_by(car_id=car_id, user_id = user_id)
-        favToDel = Favourites.query.filter_by(car_id=car_id, user_id=user_id)
+        favToDel = db.session.query(Favourites).filter_by(car_id=car_id, user_id = user_id)
+        # favToDel = Favourites.query.filter_by(car_id=car_id, user_id=user_id)
     
         db.session.delete(favToDel)
         db.session.commit()
@@ -436,7 +436,7 @@ def rmvCarFromFav(car_id):
 @requires_auth
 def addCarToFav(car_id):
     if g.current_user:
-        if Favourites.query.filter_by(user_id = g.current_user[sub], car_id = car_id):
+        if Favourites.query.filter_by(user_id = (g.current_user)['sub'], car_id = car_id):
             return jsonify({"message": "Conflict! Car cannot be favourited twice"}), 409
         else: 
             user_id = (g.current_user)['sub']
