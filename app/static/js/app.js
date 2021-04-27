@@ -33,6 +33,16 @@ app.component('app-footer', {
 
 const privateAppBar = {
     name: 'app-bar',
+    computed:{
+      user_id: function(){
+        token = localStorage.getItem("token");
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace('-', '+').replace('_', '/');
+        var res = JSON.parse(atob(base64));
+        console.log(res.sub)
+        return res.sub;
+      }
+    },
     template: `  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <a class="navbar-brand" href="/">
       <svg version="1.1" id="car_logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -99,7 +109,7 @@ const privateAppBar = {
         <router-link class="nav-link" to="/cars/explore">Explore <span class="sr-only">(current)</span></router-link>
       </li>
       <li class="nav-item active ml-5">
-        <router-link class="nav-link" :to="'/user/'+ 1">My Profile <span class="sr-only">(current)</span></router-link>
+        <router-link class="nav-link" :to="'/user/'+ this.user_id">My Profile <span class="sr-only">(current)</span></router-link>
       </li>
       </ul>
       <ul class="navbar-nav">
@@ -656,8 +666,30 @@ const NewCar = {
 
 const ViewCar = {
   name:'ViewCar',
+  props: ['flashes'],
+  computed:{
+    json_flashes: function(){
+      return JSON.parse(this.flashes)
+    },
+    is_flashes: function(){
+      if(this.flashes){
+        return true
+      }else{
+        return false
+      }
+    },
+    user_id: function(){
+      token = localStorage.getItem("token");
+      var base64Url = token.split('.')[1];
+      var base64 = base64Url.replace('-', '+').replace('_', '/');
+      var res = JSON.parse(atob(base64));
+      console.log(res.sub)
+      return res.sub;
+    }
+  },
   template:`
   <div class="view_car">
+    <Flash v-if="is_flashes" v-for="flash in json_flashes" v-bind:message="flash.message" v-bind:category="flash.category"></Flash>
     <div v-if="isCar" class="car">
         <div class="car_img">
             <img class="img-fluid" :src="car.photo">
@@ -767,23 +799,43 @@ const ViewCar = {
         method: 'GET',
         headers:{
           "Authorization": "Bearer " + localStorage.getItem("token")
-        },
-        credentials: 'same-origin'
+        }
     })    
     .then(function (response) {        
-        return response.json();
-        })    
-    .then(function (jsonResponse) {
-        // display a success message
-        console.log(jsonResponse);
-        self.car=jsonResponse;
-        self.isCar = true;
-      })    
-    .catch(function (error) {
-        console.log(error); 
-        self.error=error;  
-        self.isCar = false
-    });
+      if(response.status == 404 || response.status == 500){
+        response.json().then((data) => {
+          router.push({ name: 'Explore', params: { flashes: JSON.stringify(
+            [{
+                message: data.message,
+                category: "danger"
+              }]
+          )}})
+        });
+      } else if (response.status == 200){
+        response.json().then((data) => {
+          self.car=data;
+          self.isCar = true;
+        });
+      } else if (response.status == 400){
+        response.json().then((data) => {
+          router.push({ name: 'Explore', params: { flashes: JSON.stringify(
+            [{
+                message: "Wrong request format, contact Administrator.",
+                category: "danger"
+              }]
+          ) }})
+        });
+      } else if (response.status == 401){
+        response.json().then((data) => {
+          router.push({ name: 'Explore', params: { flashes: JSON.stringify(
+            [{
+                message: "Please log in to view cars.",
+                category: "danger"
+              }]
+          ) }})
+        });
+      }  
+    })
   },
   methods:{
     // Get user_id from JWT bearer payload
@@ -821,6 +873,9 @@ const ViewCar = {
           error: '',
           isCar: ''
       }
+  },
+  components:{
+    Flash
   }
 }
 
@@ -891,7 +946,6 @@ const ExploreComponent = {
         var base64Url = token.split('.')[1];
         var base64 = base64Url.replace('-', '+').replace('_', '/');
         var res = JSON.parse(atob(base64));
-        console.log(res.sub)
         return res.sub;
       }
     },
@@ -916,6 +970,7 @@ const ExploreComponent = {
                           <input class="form-control" id="model" type="text" name="model" placeholder="Model S">
                       </div> 
                       <div class="form-group col-sm ">
+                          <div>&nbsp;</div>
                           <button type="submit" class="btn-class mt-lg-4">Search</button>
                       </div>
                       </div>
@@ -923,6 +978,7 @@ const ExploreComponent = {
               <div class="col-sm"></div>
               <CardCarsList></CardCarsList>
             </div>
+          </div>
         </div>
       </section>
     `,
@@ -939,8 +995,29 @@ const ExploreComponent = {
 
 const UserProfile = {
   name: 'UserProfile',
+  props: ['flashes'],
+  computed:{
+    json_flashes: function(){
+      return JSON.parse(this.flashes)
+    },
+    is_flashes: function(){
+      if(this.flashes){
+        return true
+      }else{
+        return false
+      }
+    },
+    user_id: function(){
+      token = localStorage.getItem("token");
+      var base64Url = token.split('.')[1];
+      var base64 = base64Url.replace('-', '+').replace('_', '/');
+      var res = JSON.parse(atob(base64));
+      return res.sub;
+    }
+  },
   template:`
   <div id="user_profile" class="row">
+    <Flash v-if="is_flashes" v-for="flash in json_flashes" v-bind:message="flash.message" v-bind:category="flash.category"></Flash>
     <div class="col-lg-8 mx-auto mb-5">
       <section v-if="isUser" class="user row mt-5">
         <div class="col-md-2 user_img">
@@ -1015,19 +1092,31 @@ const UserProfile = {
         headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
     })    
     .then(function (response) {        
-        return response.json();
-        })    
-    .then(function (jsonResponse) {
-        // display a success message
-        console.log(jsonResponse);
-        self.user=jsonResponse;
-        self.isUser = true;
-      })    
-    .catch(function (error) {
-        console.log(error); 
-        self.error=error;  
-        self.isUser = false
-    });
+      if(response.status == 404 || response.status == 500){
+        response.json().then((data) => {
+          router.push({ name: 'Explore', params: { flashes: JSON.stringify(
+            [{
+                message: "User not found.",
+                category: "danger"
+              }]
+          )}})
+        });
+      } else if (response.status == 200){
+        response.json().then((data) => {
+          self.user=data;
+          self.isUser = true;
+        });
+      } else if (response.status == 401){
+        response.json().then((data) => {
+          router.push({ name: 'Explore', params: { flashes: JSON.stringify(
+            [{
+                message: "Please log in to view profile.",
+                category: "danger"
+              }]
+          ) }})
+        });
+      }
+    })    
   },
   computed :{
     user_id: function(){
@@ -1047,7 +1136,8 @@ const UserProfile = {
       }
   },
   components : {
-    CardCarsList
+    CardCarsList,
+    Flash
   }
 }
 
