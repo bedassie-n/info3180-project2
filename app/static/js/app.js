@@ -37,10 +37,18 @@ const privateAppBar = {
       user_id: function(){
         token = localStorage.getItem("token");
         if(token){
+<<<<<<< HEAD
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace('-', '+').replace('_', '/');
+        var res = JSON.parse(atob(base64));
+        console.log(res.sub)
+        return res.sub;
+=======
           var base64Url = token.split('.')[1];
           var base64 = base64Url.replace('-', '+').replace('_', '/');
           var res = JSON.parse(atob(base64));
           return res.sub;
+>>>>>>> 2b602ad070312cfad71d77e6393a83c9f9b096c6
         } else {
           return null;
         }
