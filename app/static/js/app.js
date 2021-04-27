@@ -37,11 +37,11 @@ const privateAppBar = {
       user_id: function(){
         token = localStorage.getItem("token");
         if(token){
-        var base64Url = token.split('.')[1];
-        var base64 = base64Url.replace('-', '+').replace('_', '/');
-        var res = JSON.parse(atob(base64));
-        console.log(res.sub)
-        return res.sub;
+          var base64Url = token.split('.')[1];
+          var base64 = base64Url.replace('-', '+').replace('_', '/');
+          var res = JSON.parse(atob(base64));
+          console.log(res.sub)
+          return res.sub;
         } else {
           return null;
         }
@@ -984,9 +984,9 @@ const ExploreComponent = {
                       </div>
                       </div>
               </form>
-              <div class="col-sm"></div>
               <CardCarsList></CardCarsList>
             </div>
+            <div class="col-sm"></div>
           </div>
         </div>
       </section>
@@ -998,8 +998,6 @@ const ExploreComponent = {
         CardCarsList,
         Flash
     }
-
-
 }
 
 const UserProfile = {
