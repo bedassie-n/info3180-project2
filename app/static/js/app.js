@@ -40,7 +40,6 @@ const privateAppBar = {
           var base64Url = token.split('.')[1];
           var base64 = base64Url.replace('-', '+').replace('_', '/');
           var res = JSON.parse(atob(base64));
-          console.log(res.sub)
           return res.sub;
         } else {
           return null;
