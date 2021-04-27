@@ -340,7 +340,7 @@ border: 0;
 
 .favourited-svg {
     cursor: pointer;
-    fill: white;
+    fill: white!important;
 }
 
 #heart {
