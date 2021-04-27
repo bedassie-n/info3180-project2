@@ -114,11 +114,16 @@ const privateAppBar = {
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item active">
-          <router-link class="nav-link" to="/login">Logout<span class="sr-only">(current)</span></router-link>
+          <router-link @click="logout" class="nav-link" to="/">Logout<span class="sr-only">(current)</span></router-link>
         </li> 
       </ul> 
     </div>
-  </nav>`
+  </nav>`,
+    methods : {
+        logout() {
+            localStorage.removeItem("token");
+        }
+    }
 }
 
 const publicAppBar = {
@@ -212,7 +217,7 @@ app.component('app-header', {
     },
     data(){
       return {
-          publicRoutes:['Login', 'Register']
+          publicRoutes:['Login', 'Register', 'Home']
       }
     },
     computed: {
@@ -1155,7 +1160,7 @@ const NotFound = {
 
 // Define Routes
 const routes = [
-  { path: "/", component: Home },
+  { path: "/", component: Home, name:"Home" },
   // Put other routes here
   {path:"/login",component: loginComponent, name:"Login", props: true},
   {path:"/register", component: Register, name:"Register", props:true},
