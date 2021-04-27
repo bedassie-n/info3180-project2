@@ -505,7 +505,6 @@ const NewCar = {
       var base64Url = token.split('.')[1];
       var base64 = base64Url.replace('-', '+').replace('_', '/');
       var res = JSON.parse(atob(base64));
-      console.log(res.sub)
       return res.sub;
     }
   },
@@ -691,7 +690,6 @@ const ViewCar = {
       var base64Url = token.split('.')[1];
       var base64 = base64Url.replace('-', '+').replace('_', '/');
       var res = JSON.parse(atob(base64));
-      console.log(res.sub)
       return res.sub;
     }
   },
@@ -1025,11 +1023,11 @@ const UserProfile = {
   <div id="user_profile" class="row">
     <Flash v-if="is_flashes" v-for="flash in json_flashes" v-bind:message="flash.message" v-bind:category="flash.category"></Flash>
     <div class="col-lg-8 mx-auto mb-5">
-      <section v-if="isUser" class="user row mt-5">
-        <div class="col-md-2 user_img">
-            <img class="img-fluid" :src="user.photo">
+      <section v-if="isUser" class="user row mt-5 mx-5">
+        <div class="col-md-3 user_img">
+            <img class="img-fluid mt-3 mx-2" :src="user.photo">
         </div>
-        <div class="col-md-6 user-info pr-5">
+        <div class="col-md-7 user-info pr-5">
             <h1 class="font-weight-bold">{{user.name}}</h1>
             <h4 class="text-secondary font-weight-bold">@{{user.username}}</h4><br>
             <section class="text-secondary">
@@ -1051,7 +1049,7 @@ const UserProfile = {
             </div>
         </div>
       </section>
-      <section v-if="isUser" id="favourited_cars" class="mt-5">
+      <section v-if="isUser" id="favourited_cars" class="mt-5 mx-5">
         <h3> Cars Favourited</h3>
         <CardCarsList/>
       </section>
@@ -1130,7 +1128,6 @@ const UserProfile = {
       var base64Url = token.split('.')[1];
       var base64 = base64Url.replace('-', '+').replace('_', '/');
       var res = JSON.parse(atob(base64));
-      console.log(res.sub)
       return res.sub;
     }
   },

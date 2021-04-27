@@ -507,9 +507,13 @@ def index(path):
     return render_template('index.html')
 
 
-# @app.route('/uploads/<filename>')
-# def get_image(filename):
-#     return send_from_directory(os.path.join('..', app.config['UPLOAD_FOLDER']), filename)
+@app.route('/profileUploads/<filename>')
+def get_profile_image(filename):
+    return send_from_directory(os.path.join('..', app.config['PROFILE_UPLOAD_FOLDER']), filename)
+
+@app.route('/carUploads/<filename>')
+def get_car_image(filename):
+    return send_from_directory(os.path.join('..', app.config['CAR_UPLOAD_FOLDER']), filename)
 
 
 def allowed_file(filename):
