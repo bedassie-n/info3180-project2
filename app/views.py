@@ -482,18 +482,25 @@ def getUserFavourites(user_id):
     if len(fave) !=0:
         for f in fave:
             carid = f.car_id
-            userid = f.user_id
             
-            fresult = {'carid': carid, "userid": userid}
+            car = Cars.query.filter_by(id = carid).first()
+            id = car.id
+            description = car.description
+            year = car.year
+            make = car.make
+            model = car.model
+            colour = car.colour
+            transmission = car.transmission
+            car_type = car.car_type
+            price = car.price
+            photo = car.photo
+            user_id = car.user_id
+
+            fresult = {"id": id, "description": description, "year": year, "make": make, "mode": model, "colour": colour, "transmission": transmission, "car_type": car_type, "price": price, "photo": photo, "user_id": user_id}
             result.append(fresult)
         return jsonify({'result':result}), 200
     elif len(fave) == 0: 
         return jsonify({"result": result}), 404
-    # else:
-    #     # idealy need to figure out how to check the user is authenticated and token valid for a 401
-    #     return jsonify({'result': "Access token is missing or invalid"}), 401
-
-
 
 # Please create all new routes and view functions above this route.
 # This route is now our catch all route for our VueJS single page
