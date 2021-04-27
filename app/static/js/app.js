@@ -327,7 +327,26 @@ const loginComponent = {
            // headers: {'X-CSRFToken': token    },    credentials: 'same-origin'
         })    
           .then(function (response) {        
-              return response.json();
+            if(response.status == 404){
+              response.json().then((data) => {
+                router.push({ name: 'Login', params: { flashes: JSON.stringify(
+                  [{
+                      message: "Username or password is incorrect",
+                      category: "danger"
+                    }]
+                )}})
+              });
+            } else if (response.status == 200){
+              response.json().then((data) => {
+                router.push({ name: 'Explore', params: { flashes: JSON.stringify(
+                  [{
+                      message: "Login Successful",
+                      category: "success"
+                    }]
+                )}})
+                localStorage.setItem('token', data.token)
+              });
+            }
               })    
           .then(function (jsonResponse) {
               // display a success message
