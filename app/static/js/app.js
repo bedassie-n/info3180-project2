@@ -36,15 +36,11 @@ const privateAppBar = {
     computed:{
       user_id: function(){
         token = localStorage.getItem("token");
-        if(token){
         var base64Url = token.split('.')[1];
         var base64 = base64Url.replace('-', '+').replace('_', '/');
         var res = JSON.parse(atob(base64));
         console.log(res.sub)
         return res.sub;
-        } else {
-          return null;
-        }
       }
     },
     template: `  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">

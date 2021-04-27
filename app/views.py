@@ -83,7 +83,7 @@ def register():
         rawPhoto = request.files['photo']
         filename = secure_filename(rawPhoto.filename)
         rawPhoto.save(os.path.join(
-            app.config['UPLOAD_FOLDER'], filename
+            app.config['PROFILE_UPLOAD_FOLDER'], filename
         ))
         
         # check if user already exists in database
@@ -100,7 +100,9 @@ def register():
                 location = request.form.get('location', ""),
                 biography = request.form.get('biography', ""),
                 # photo = request.form.get('photo', ""),
-                photo = filename,
+                # photo = app.config['PROFILE_UPLOAD_FOLDER'] + "/" + filename, #gives user/prof..Fil...
+                # photo = "profileUploads/" + filename, #gives user/pr.../..
+                photo = "../../../profileUploads/" + filename,
                 date_joined =  datetime.datetime.now(datetime.timezone.utc)
             )
 
@@ -298,40 +300,47 @@ def addCars():
     #     return jsonify({'result':[]}), 400
 
     if request.json:
+        # get photo filename
+        rawCarPhoto = request.files['photo']
+        carFilename = secure_filename(rawCarPhoto.filename)
+        rawCarPhoto.save(os.path.join(
+            app.config['CAR_UPLOAD_FOLDER'], carFilename
+        ))
+        
+        # get photo path
+        # carPhotoPath = os.path.join(
+        #     app.config['CAR_UPLOAD_FOLDER'], carFilename
+        # )
+
+        # get photo path
+        carPhotoPath = "../../../carUploads/" + filename
+
         # check if car already exists in database 
         # for a user to add a car, it must have at least one attribute that differs from all other cars
-        if Cars.query.filter_by(description = request.json['description']).first() \
-            or Cars.query.filter_by(year = request.json['year']).first() \
-            or Cars.query.filter_by(make = request.json['make']).first() \
-            or Cars.query.filter_by(model = request.json['model']).first() \
-            or Cars.query.filter_by(colour = request.json['colour']).first() \
-            or Cars.query.filter_by(transmission = request.json['transmission']).first() \
-            or Cars.query.filter_by(car_type = request.json['car_type']).first() \
-            or Cars.query.filter_by(price = request.json['price']).first() \
-            or Cars.query.filter_by(photo = request.json['photo']).first():
+        if Cars.query.filter_by(description = request.form['description']).first() \
+            or Cars.query.filter_by(year = request.form['year']).first() \
+            or Cars.query.filter_by(make = request.form['make']).first() \
+            or Cars.query.filter_by(model = request.form['model']).first() \
+            or Cars.query.filter_by(colour = request.form['colour']).first() \
+            or Cars.query.filter_by(transmission = request.form['transmission']).first() \
+            or Cars.query.filter_by(car_type = request.form['car_type']).first() \
+            or Cars.query.filter_by(price = request.form['price']).first() \
+            or Cars.query.filter_by(photo = carPhotoPath).first():
             # or Cars.query.filter_by(user_id = request.json['user_id']).first() :
                 return jsonify({'message': 'Car already exists.'}), 409
         else:
-            # get photo filename
-            rawCarPhoto = request.json['photo']
-            # rawCarPhoto = request.files['photo']
-            carFilename = secure_filename(rawCarPhoto.filename)
-            rawCarPhoto.save(os.path.join(
-                app.config['UPLOAD_FOLDER'], carFilename
-            ))
-        
             car = Cars(
-                description = request.json['description'],
-                year = request.json['year'],
-                make = request.json['make'],
-                model = request.json['model'],
-                colour = request.json['colour'],
-                transmission = request.json['transmission'],
-                car_type = request.json['car_type'],
-                price = request.json['price'],
+                description = request.form['description'],
+                year = request.form['year'],
+                make = request.form['make'],
+                model = request.form['model'],
+                colour = request.form['colour'],
+                transmission = request.form['transmission'],
+                car_type = request.form['car_type'],
+                price = request.form['price'],
                 # photo = request.json.get('photo', ""),
-                photo = request.json.get('photo', ""),
-                user_id = request.json['user_id']
+                photo = carPhotoPath,
+                user_id = request.form['user_id']
             )
 
             #add car to db
@@ -339,9 +348,9 @@ def addCars():
             db.session.commit()
 
             #get the car from the db (using description, user_id and photo to identify)
-            newCar = Cars.query.filter_by(description = request.json['description']) \
-                                .filter_by(user_id = request.json['user_id']) \
-                                .filter_by(photo = request.json['photo']) \
+            newCar = Cars.query.filter_by(description = request.form['description']) \
+                                .filter_by(user_id = request.form['user_id']) \
+                                .filter_by(photo = carPhotoPath) \
                                 .first()
 
             #build api response with car data
@@ -498,9 +507,9 @@ def index(path):
     return render_template('index.html')
 
 
-@app.route('/uploads/<filename>')
-def get_image(filename):
-    return send_from_directory(os.path.join('..', app.config['UPLOAD_FOLDER']), filename)
+# @app.route('/uploads/<filename>')
+# def get_image(filename):
+#     return send_from_directory(os.path.join('..', app.config['UPLOAD_FOLDER']), filename)
 
 
 def allowed_file(filename):
