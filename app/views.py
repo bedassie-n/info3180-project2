@@ -319,15 +319,15 @@ def addCars():
         # check if car already exists in database 
         # for a user to add a car, it must have at least one attribute that differs from all other cars
         if Cars.query.filter_by(description = request.form['description']).first() \
-            or Cars.query.filter_by(year = request.form['year']).first() \
-            or Cars.query.filter_by(make = request.form['make']).first() \
-            or Cars.query.filter_by(model = request.form['model']).first() \
-            or Cars.query.filter_by(colour = request.form['colour']).first() \
-            or Cars.query.filter_by(transmission = request.form['transmission']).first() \
-            or Cars.query.filter_by(car_type = request.form['car_type']).first() \
-            or Cars.query.filter_by(price = request.form['price']).first() \
-            or Cars.query.filter_by(photo = carPhotoPath).first():
-            # or Cars.query.filter_by(user_id = request.json['user_id']).first() :
+            and Cars.query.filter_by(year = request.form['year']).first() \
+            and Cars.query.filter_by(make = request.form['make']).first() \
+            and Cars.query.filter_by(model = request.form['model']).first() \
+            and Cars.query.filter_by(colour = request.form['colour']).first() \
+            and Cars.query.filter_by(transmission = request.form['transmission']).first() \
+            and Cars.query.filter_by(car_type = request.form['car_type']).first() \
+            and Cars.query.filter_by(price = request.form['price']).first() \
+            and Cars.query.filter_by(photo = carPhotoPath).first():
+            # and Cars.query.filter_by(user_id = request.json['user_id']).first() :
                 return jsonify({'message': 'Car already exists.'}), 409
         else:
             car = Cars(
