@@ -1085,26 +1085,30 @@ const ExploreComponent = {
       },
         getCarsBySearch() {
            let self = this;
-           fetch(`/api/search?` + new URLSearchParams({make:self.make, model:self.model}), {
-    method: 'GET',
-    headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
-    })
-    .then(function (response) {
-      if(response.status == 404 || response.status == 500){
-        response.json().then((data) => {
-          router.push({ name: 'Explore', params: { flashes: JSON.stringify(
-            [{
-                message: "No Cars Found.",
-                category: "warning"
-              }]
-          )}})
-        });
-      } else if (response.status == 200){
-        response.json().then((data) => {
-          self.cars = data.result
-        });
-      }
-    })
+           if(self.make == "" && self.model== ""){
+            self.getAllCars()
+           } else {
+            fetch(`/api/search?` + new URLSearchParams({make:self.make, model:self.model}), {
+              method: 'GET',
+              headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
+              })
+              .then(function (response) {
+                if(response.status == 404 || response.status == 500){
+                  response.json().then((data) => {
+                    router.push({ name: 'Explore', params: { flashes: JSON.stringify(
+                      [{
+                          message: "No Cars Found.",
+                          category: "warning"
+                        }]
+                    )}})
+                  });
+                } else if (response.status == 200){
+                  response.json().then((data) => {
+                    self.cars = data.result
+                  });
+                }
+              })
+           }
         }
     },
   components : {
