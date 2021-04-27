@@ -1001,8 +1001,8 @@ const CardCarsList = {
     props: ['cars'],
     template:`
     <div class="container">
-      <div class="row">
-        <div v-for="card in cars" class="card col-sm vehicle-list-card box-shadow-down" style="width: 18rem;">
+      <div class="row card-deck">
+        <div v-for="card in cars" class="card col-sm mt-3 mx-2 box-shadow-down" style="width: 18rem;">
           <img class="img-fluid card-img-top" :src="card.photo" >
           <div class="card-body">
             <h5 class="card-title">{{card.year + " " + card.make}} <span><button class="price-chip "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tag" viewBox="0 0 16 16">
@@ -1066,10 +1066,10 @@ const ExploreComponent = {
                       </div>
                       </div>
               </form>
-              <CardCarsList v-bind:cars="cars"></CardCarsList>
             </div>
             <div class="col-sm"></div>
           </div>
+          <CardCarsList v-bind:cars="cars"></CardCarsList>
         </div>
       </section>
     `,
@@ -1197,7 +1197,7 @@ const UserProfile = {
       </section>
       <section v-if="isUser" id="favourited_cars" class="mt-5 mx-5">
         <h3> Cars Favourited</h3>
-        <CardCarsList/>
+        <CardCarsList v-bind:cars="cars"/>
       </section>
       <section v-else class="user mt-5">
         <div class="user_img">
@@ -1266,7 +1266,35 @@ const UserProfile = {
           ) }})
         });
       }
-    })    
+    })
+    fetch(`/api/cars/${this.user_id}/favourties`, {
+    method: 'GET',
+    headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
+    })
+    .then(function (response) {        
+      if(response.status == 404 || response.status == 500){
+        response.json().then((data) => {
+          console.log(data.result)
+        });
+      } else if (response.status == 200){
+        response.json().then((data) => {
+          console.log(data);
+          data.result.forEach(pair => {
+            console.log(pair.carid);
+            fetch(`/api/cars/${pair.carid}`,{
+              method: 'GET',
+              headers: {'Authorization': "Bearer " + localStorage.getItem("token")},
+            }).then(function(response){
+              if (response.status == 200){
+                response.json().then((data) => {
+                  self.cars.push(data.result);
+                });
+              }
+            });
+          })
+        });
+      }
+    })  
   },
   computed :{
     user_id: function(){
@@ -1281,7 +1309,8 @@ const UserProfile = {
       return {
           user: {},
           error: '',
-          isUser: ''
+          isUser: '',
+          cars: []
       }
   },
   components : {

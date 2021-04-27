@@ -384,8 +384,10 @@ input[type="file"]{
     padding: .5em;
 }
 
-.vehicle-list-card {
-    margin: 0px 5px 0px 5px;
+.row.card-deck{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 1fr;
 }
 
 .user{
@@ -455,10 +457,6 @@ input[type="file"]{
     overflow: hidden;
 }
 
-.card{
-    padding: 0;
-}
-
 .card-text{
     margin-bottom: 3em;
 }
@@ -466,6 +464,8 @@ input[type="file"]{
 .card{
     display: grid;
     grid-template: 1fr 1fr / 1fr;
+    padding: 0;
+    grid-area: auto;
 }
 
 .box-shadow-down{
